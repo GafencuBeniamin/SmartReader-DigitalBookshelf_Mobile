@@ -20,7 +20,7 @@ fun LoginNavGraph(navController: NavHostController, viewModel: LoginViewModel) {
             LoginScreen(viewModel)
         }
         composable("register") {
-            RegisterScreen(viewModel)
+            RegisterScreen(viewModel,navController)
         }
     }
 }

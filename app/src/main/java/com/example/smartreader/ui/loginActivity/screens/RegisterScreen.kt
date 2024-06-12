@@ -25,13 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.ui.loginActivity.viewmodels.LoginViewModel
 import com.example.smartreader.util.Resource
 
 @Composable
-fun RegisterScreen(viewModel: LoginViewModel = viewModel()) {
+fun RegisterScreen(viewModel: LoginViewModel, navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -91,6 +92,7 @@ fun RegisterScreen(viewModel: LoginViewModel = viewModel()) {
                 }
                 Resource.Status.SUCCESS -> {
                     Text("Signed Up: Welcome "+ signedUpUserResource.data?.username)
+                    navController.navigate("login")
                 }
                 Resource.Status.ERROR -> {
                     Text("Error: " + signedUpUserResource.message)

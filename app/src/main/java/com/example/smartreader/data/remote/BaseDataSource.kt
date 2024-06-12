@@ -1,4 +1,4 @@
-package com.example.scd_proiect_mobile_android.data.remote
+package com.example.smartreader.data.remote
 
 
 import com.example.smartreader.util.Resource

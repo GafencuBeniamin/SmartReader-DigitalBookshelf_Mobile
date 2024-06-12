@@ -1,5 +1,6 @@
 package com.example.smartreader.ui.loginActivity.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -17,13 +18,18 @@ import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.ui.loginActivity.viewmodels.LoginViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
+import com.example.smartreader.di.SessionManager
+import com.example.smartreader.ui.mainActivity.MainActivity
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(viewModel: LoginViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val loggedInUserResource by viewModel.loggedInUser.observeAsState(initial = Resource.loading(null))
+    val sessionManager = SessionManager(LocalContext.current)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -71,6 +77,10 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
                 }
                 Resource.Status.SUCCESS -> {
                     Text("Logged in: Welcome "+ loggedInUserResource.data?.username)
+                    sessionManager.saveAuthToken(loggedInUserResource.data?.token.toString())
+                    // Start MainActivity
+                    val intent = Intent(LocalContext.current, MainActivity::class.java)
+                    LocalContext.current.startActivity(intent)
                 }
                 Resource.Status.ERROR -> {
                     Text("Error: " + loggedInUserResource.message)

@@ -1,6 +1,6 @@
-package com.example.SCD_proiect.data.repository
+package com.example.smartreader.data.repository
 
-import com.example.scd_proiect_mobile_android.data.remote.AppRemoteDataSource
+import com.example.smartreader.data.remote.AppRemoteDataSource
 import javax.inject.Inject
 
 class AppRepository @Inject constructor(

@@ -3,7 +3,7 @@ package com.example.smartreader.ui.loginActivity.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.SCD_proiect.data.repository.AppRepository
+import com.example.smartreader.data.repository.AppRepository
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.data.entities.User
