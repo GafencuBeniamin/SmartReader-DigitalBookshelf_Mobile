@@ -15,6 +15,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -38,11 +39,14 @@ fun AccountScreen(viewModel: MainViewModel) {
     val userResource by viewModel.userDetails.observeAsState(initial = Resource.loading(null))
     val sessionManager = SessionManager(LocalContext.current)
 
+    LaunchedEffect(Unit) {
+        viewModel.getMyDetails()
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        viewModel.getMyDetails()
         when (userResource.status) {
             Resource.Status.LOADING -> {
                 Box(

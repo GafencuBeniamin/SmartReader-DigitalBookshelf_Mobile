@@ -19,6 +19,9 @@ class MainViewModel @Inject constructor(
     val book = MutableLiveData<Resource<Book>>()
     val userDetails = MutableLiveData<Resource<User>>()
     val createdBook = MutableLiveData<Resource<Book>>()
+    val editedBook = MutableLiveData<Resource<Book>>()
+    val deletedBook = MutableLiveData<Resource<Book>>()
+    val currentPhotoPath = MutableLiveData<String?>()
 
     fun getMyBooks(){
         viewModelScope.launch {
@@ -41,11 +44,34 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun editBook(id: String, book: Book){
+        viewModelScope.launch {
+            val result = repository.remote.editBook(id,book)
+            editedBook.postValue(result)
+        }
+
+    }
+    fun deleteBook(id: String){
+        viewModelScope.launch {
+            val result = repository.remote.deleteBook(id)
+            deletedBook.postValue(result)
+        }
+    }
+
     fun getMyDetails(){
         viewModelScope.launch {
             val result = repository.remote.getMyDetails()
             userDetails.postValue(result)
         }
+    }
+    fun resetState() {
+        userLibrary.value = Resource.loading(null)
+        book.value = Resource.loading(null)
+        userDetails.value = Resource.loading(null)
+        createdBook.value = Resource.loading(null)
+        editedBook.value = Resource.loading(null)
+        deletedBook.value = Resource.loading(null)
+        currentPhotoPath.value = null
     }
 
 }

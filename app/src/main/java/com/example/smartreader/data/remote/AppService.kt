@@ -6,8 +6,10 @@ import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.data.entities.User
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface AppService {
@@ -25,6 +27,15 @@ interface AppService {
 
     @POST("books/createNewBook")
     suspend fun createBook(@Body book: Book): Response<Book>
+
+    @PUT("books/updateBookByUser/{id}")
+    suspend fun editBook(@Path("id") id:String, @Body book: Book) : Response<Book>
+
+    @DELETE("books/removeBookByUser/{id}")
+    suspend fun deleteBook(@Path("id") id: String) : Response<Book>
+
+    /**NOTES*/
+
 
     /**USER*/
     @GET("user/myDetails")

@@ -138,12 +138,11 @@ fun BookItem(book: Book, onClick: (String) -> Unit) {
             modifier = Modifier
                 .size(100.dp)
                 .padding(end = 16.dp),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(text = book.title.toString(), style = MaterialTheme.typography.h6)
             Text(text = book.author.toString(), style = MaterialTheme.typography.body2)
         }
     }
-    Spacer(modifier = Modifier.height(200.dp))
 }
