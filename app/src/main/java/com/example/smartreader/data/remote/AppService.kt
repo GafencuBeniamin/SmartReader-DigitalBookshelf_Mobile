@@ -1,7 +1,9 @@
 package com.example.smartreader.data.remote
 
 import com.example.smartreader.data.entities.Book
+import com.example.smartreader.data.entities.BookState
 import com.example.smartreader.data.entities.LogInCredentials
+import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.data.entities.User
 import retrofit2.Response
@@ -22,7 +24,7 @@ interface AppService {
     /**BOOKS*/
     @GET("books/myBooks")
     suspend fun getMyBooks(): Response<List<Book>>
-    @GET("books/{id}")
+    @GET("books/getBookByIdByUser/{id}")
     suspend fun  getBookById(@Path("id") id:String) : Response<Book>
 
     @POST("books/createNewBook")
@@ -30,12 +32,22 @@ interface AppService {
 
     @PUT("books/updateBookByUser/{id}")
     suspend fun editBook(@Path("id") id:String, @Body book: Book) : Response<Book>
+    @PUT("books/updatePublicBookByUser/{id}")
+    suspend fun editPublicBook(@Path("id") id:String, @Body bookState: BookState) : Response<Book>
 
     @DELETE("books/removeBookByUser/{id}")
     suspend fun deleteBook(@Path("id") id: String) : Response<Book>
 
     /**NOTES*/
 
+    @GET("notes/{id}")
+    suspend fun getNoteById(@Path("id") id:String) : Response<Note>
+    @GET("notes/myNotesFromBook/{bookId}")
+    suspend fun getMyNotesFromBook(@Path("bookId") bookId:String) : Response<List<Note>>
+    @POST("notes/createNewNote")
+    suspend fun createNote(@Body note: Note): Response<Note>
+    @DELETE("notes/removeNoteByUser/{id}")
+    suspend fun deleteNote(@Path("id") id: String) : Response<Note>
 
     /**USER*/
     @GET("user/myDetails")

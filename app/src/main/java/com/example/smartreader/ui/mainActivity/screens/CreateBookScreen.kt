@@ -141,7 +141,7 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                 }
             }
 
-            ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
+            ImagePicker(viewModel = viewModel, isPublic = false, onImagePicked = { uri ->
                 imageState.value = uri.toString()
             })
 
@@ -154,7 +154,7 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                         language = languageState.value,
                         genre = genreState.value,
                         image = imageState.value,
-                        state = stateState.value,
+                        bookStates = mapOf("0" to stateState.value),
                         editure = editureState.value
                     )
                     viewModel.createBook(book)

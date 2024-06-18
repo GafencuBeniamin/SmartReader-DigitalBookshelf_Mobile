@@ -39,6 +39,7 @@ import com.example.smartreader.MainApplication.Companion.context
 import com.example.smartreader.R
 import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookState
+import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.ui.mainActivity.utils.ExposedDropdownMenuBox
 import com.example.smartreader.ui.mainActivity.utils.ImagePicker
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
@@ -78,6 +79,7 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                 }
             }
             Resource.Status.SUCCESS -> {
+                val isPublic = bookResource.data?.isPublic == BookStatus.PUBLIC
                 if (titleState.value.isEmpty()) {
                     titleState.value = bookResource.data?.title ?: ""
                     authorState.value = bookResource.data?.author?.joinToString(", ") ?: ""
@@ -85,7 +87,7 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                     pagesState.value = bookResource.data?.noOfPages?.toString() ?: ""
                     languageState.value = bookResource.data?.language ?: ""
                     genreState.value = bookResource.data?.genre ?: ""
-                    stateState.value = bookResource.data?.state ?: BookState.TO_BE_READ
+                    stateState.value = bookResource.data?.bookStates?.entries?.firstOrNull()?.value ?: BookState.TO_BE_READ
                     imageState.value = bookResource.data?.image ?: ""
                 }
 
@@ -100,18 +102,21 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         value = titleState.value,
                         onValueChange = { titleState.value = it },
                         label = { Text("Title") },
+                        readOnly = isPublic,
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = authorState.value,
                         onValueChange = { authorState.value = it },
                         label = { Text("Author") },
+                        readOnly = isPublic,
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = editureState.value,
                         onValueChange = { editureState.value = it },
                         label = { Text("Editure") },
+                        readOnly = isPublic,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -119,6 +124,7 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         value = pagesState.value,
                         onValueChange = { pagesState.value = it },
                         label = { Text("Number of Pages") },
+                        readOnly = isPublic,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -126,12 +132,14 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         value = languageState.value,
                         onValueChange = { languageState.value = it },
                         label = { Text("Language") },
+                        readOnly = isPublic,
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = genreState.value,
                         onValueChange = { genreState.value = it },
                         label = { Text("Genre") },
+                        readOnly = isPublic,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -172,7 +180,7 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         }
                     }
 
-                    ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
+                    ImagePicker(viewModel = viewModel, isPublic = isPublic, onImagePicked = { uri ->
                         imageState.value = uri.toString()
                     })
 
@@ -185,9 +193,10 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                                 language = languageState.value,
                                 genre = genreState.value,
                                 image = imageState.value,
-                                state = stateState.value,
+                                bookStates = mapOf("0" to stateState.value),
                                 editure = editureState.value
                             )
+                            //add if book is public case
                             viewModel.editBook(bookId, book)
                         },
                         modifier = Modifier.padding(top = 16.dp)

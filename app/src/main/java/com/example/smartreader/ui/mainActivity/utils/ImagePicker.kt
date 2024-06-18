@@ -24,7 +24,7 @@ import java.io.InputStream
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit) {
+fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit, isPublic: Boolean) {
     val context = LocalContext.current
     val imageUri by viewModel.currentPhotoPath.observeAsState()
 
@@ -61,13 +61,15 @@ fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit) {
             } catch (ex: IOException) {
                 ex.printStackTrace()
             }
-        }) {
+        },
+            enabled = !isPublic
+        ) {
             Text("Take Photo")
         }
     } else {
         Text("Please grant Camera permissions in app settings to use camera feature.")
     }
-    Button(onClick = { galleryLauncher.launch("image/*") }) {
+    Button(onClick = { galleryLauncher.launch("image/*") }, enabled = !isPublic) {
         Text("Pick from Gallery")
     }
 }

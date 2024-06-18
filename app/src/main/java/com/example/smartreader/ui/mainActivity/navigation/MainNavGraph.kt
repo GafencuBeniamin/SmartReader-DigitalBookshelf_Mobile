@@ -66,8 +66,14 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
                 NoteDetailsScreen(noteId = noteId, viewModel = viewModel, navController = navController)
             }
         }
-        composable("createNote"){
-            CreateNoteScreen(navController,viewModel)
+        composable(
+            "createNote/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ){ backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId")
+            if (bookId != null) {
+                CreateNoteScreen(bookId= bookId, viewModel = viewModel, navController = navController)
+            }
         }
         composable(
             "editNote/{noteId}",

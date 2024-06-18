@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -44,15 +49,18 @@ import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.ui.graphics.Color
 import com.example.smartreader.MainApplication
+import com.example.smartreader.data.entities.Note
 
 @Composable
 fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: NavController) {
     val bookResource by viewModel.book.observeAsState(initial = Resource.loading(null))
     val bookDeleteResource by viewModel.deletedBook.observeAsState(initial = Resource.loading(null))
+    val notesResource by viewModel.notesFromBook.observeAsState(initial = Resource.loading(null))
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(bookId) {
         viewModel.getBookById(bookId)
+        viewModel.getMyNotesFromBook(bookId)
     }
 
     Surface(
@@ -92,10 +100,33 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     )
 
                     //List of Notes
+                    when (notesResource.status){
+                        Resource.Status.SUCCESS ->{
+                            notesResource.data?.let { notes ->
+                                // Sort the notes by page
+                                val sortedNotes = notes.sortedBy { it.page }
+
+                                LazyRow( modifier = Modifier.padding(vertical = 16.dp)){
+                                    items(sortedNotes) { note ->
+                                        NoteItem(note = note) { noteId ->
+                                            navController.navigate("noteDetails/$noteId")
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        Resource.Status.LOADING->{
+
+                        }
+                        Resource.Status.ERROR->{
+
+                        }
+                    }
                     //Button add note
                     Button(
                         onClick = {
-                            //navigate to add new note screen
+                            navController.navigate("createNote/$bookId")
                         }
                     ) {
                         Text("Add note")
@@ -192,7 +223,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                                     }
                                     Resource.Status.ERROR -> {
                                         showDialog = false
-                                        Toast.makeText(MainApplication.context, "Error: " + bookResource.message, Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(MainApplication.context, "Error: " + bookDeleteResource.message, Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 Text("Delete")
@@ -221,5 +252,25 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
             }
         }
 
+    }
+}
+@Composable
+fun NoteItem(note: Note, onClick: (String) -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .size(150.dp, 100.dp)
+            .clickable { onClick(note.id.toString()) },
+        backgroundColor = Color(0xFFFFFFE0),
+        shape = RoundedCornerShape(8.dp),
+        elevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Page: ${note.page}", style = MaterialTheme.typography.subtitle1)
+            Text(text = note.title.toString(), style = MaterialTheme.typography.h6)
+        }
     }
 }
