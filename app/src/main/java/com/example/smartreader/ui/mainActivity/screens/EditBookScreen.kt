@@ -49,6 +49,7 @@ import com.example.smartreader.util.Resource
 fun EditBookScreen(bookId: String, navController: NavController, viewModel: MainViewModel) {
     val bookResource by viewModel.book.observeAsState(initial = Resource.loading(null))
     val bookEditResource by viewModel.editedBook.observeAsState(initial = Resource.loading(null))
+    val idState = remember { mutableStateOf("") }
     val titleState = remember { mutableStateOf("") }
     val authorState = remember { mutableStateOf("") }
     val pagesState = remember { mutableStateOf("") }
@@ -80,7 +81,8 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
             }
             Resource.Status.SUCCESS -> {
                 val isPublic = bookResource.data?.isPublic == BookStatus.PUBLIC
-                if (titleState.value.isEmpty()) {
+                if (idState.value.isEmpty()) {
+                    idState.value = bookResource.data?.id?.toString() ?: ""
                     titleState.value = bookResource.data?.title ?: ""
                     authorState.value = bookResource.data?.author?.joinToString(", ") ?: ""
                     editureState.value = bookResource.data?.editure ?: ""

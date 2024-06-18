@@ -89,6 +89,12 @@ class MainViewModel @Inject constructor(
             createdNote.postValue(result)
         }
     }
+    fun editNote(id:String, note:Note){
+        viewModelScope.launch {
+            val result = repository.remote.editNote(id,note)
+            editedNote.postValue(result)
+        }
+    }
 
     fun deleteNote(id: String){
         viewModelScope.launch {

@@ -21,6 +21,7 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun getNoteById(id: String) =  getResult { appService.getNoteById(id) }
     suspend fun getMyNotesFromBook(bookId : String)= getResult { appService.getMyNotesFromBook(bookId) }
     suspend fun createNote(note: Note) = getResult { appService.createNote(note) }
+    suspend fun editNote(id:String, note:Note) = getResult { appService.editNote(id,note) }
     suspend fun deleteNote(id: String)= getResult { appService.deleteNote(id) }
     suspend fun getMyDetails() =  getResult { appService.getMyDetails() }
 }

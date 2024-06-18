@@ -46,6 +46,8 @@ interface AppService {
     suspend fun getMyNotesFromBook(@Path("bookId") bookId:String) : Response<List<Note>>
     @POST("notes/createNewNote")
     suspend fun createNote(@Body note: Note): Response<Note>
+    @PUT("notes/updateNoteByUser/{id}")
+    suspend fun editNote(@Path("id") id: String, @Body note: Note) : Response<Note>
     @DELETE("notes/removeNoteByUser/{id}")
     suspend fun deleteNote(@Path("id") id: String) : Response<Note>
 

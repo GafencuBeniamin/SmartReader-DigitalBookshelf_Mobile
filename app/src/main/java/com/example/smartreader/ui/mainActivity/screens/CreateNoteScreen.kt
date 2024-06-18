@@ -161,7 +161,7 @@ fun CreateNoteScreen(navController: NavController, viewModel: MainViewModel, boo
 
     }
 }
-fun extractTextFromImage(uri: Uri, context: Context, onTextExtracted: (String) -> Unit) {
+private fun extractTextFromImage(uri: Uri, context: Context, onTextExtracted: (String) -> Unit) {
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     val inputImage = InputImage.fromFilePath(context, uri)
 
