@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookState
+import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.User
 import com.example.smartreader.data.repository.AppRepository
@@ -29,6 +30,7 @@ class MainViewModel @Inject constructor(
     val editedNote = MutableLiveData<Resource<Note>>()
     val createdNote= MutableLiveData<Resource<Note>>()
     val notesFromBook = MutableLiveData<Resource<List<Note>>>()
+    val bookWithChangedStatus = MutableLiveData<Resource<Book>>()
 
     fun getMyBooks(){
         viewModelScope.launch {
@@ -61,6 +63,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val result = repository.remote.editPublicBook(id, bookState)
             editedBook.postValue(result)
+        }
+    }
+    fun changeBookStatus(id: String, bookStatus: BookStatus){
+        viewModelScope.launch{
+            val result = repository.remote.changeBookStatus(id, bookStatus)
+            bookWithChangedStatus.postValue(result)
         }
     }
     fun deleteBook(id: String){
@@ -122,7 +130,12 @@ class MainViewModel @Inject constructor(
         notesFromBook.value = Resource.loading(null)
         createdNote.value = Resource.loading(null)
         notesFromBook.value = Resource.loading(null)
+        bookWithChangedStatus.value = Resource.loading(null)
         currentPhotoPath.value = null
+    }
+
+    fun resetBookWithChangedStatus(){
+        bookWithChangedStatus.value = Resource.loading(null)
     }
 
 }

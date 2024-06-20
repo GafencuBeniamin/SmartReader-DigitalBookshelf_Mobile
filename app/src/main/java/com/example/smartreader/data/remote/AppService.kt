@@ -2,6 +2,7 @@ package com.example.smartreader.data.remote
 
 import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookState
+import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
@@ -26,20 +27,18 @@ interface AppService {
     suspend fun getMyBooks(): Response<List<Book>>
     @GET("books/getBookByIdByUser/{id}")
     suspend fun  getBookById(@Path("id") id:String) : Response<Book>
-
     @POST("books/createNewBook")
     suspend fun createBook(@Body book: Book): Response<Book>
-
     @PUT("books/updateBookByUser/{id}")
     suspend fun editBook(@Path("id") id:String, @Body book: Book) : Response<Book>
     @PUT("books/updatePublicBookByUser/{id}")
     suspend fun editPublicBook(@Path("id") id:String, @Body bookState: BookState) : Response<Book>
-
+    @PUT("books/changeStatus/{id}")
+    suspend fun changeBookStatus(@Path("id") id:String, @Body bookStatus: BookStatus): Response<Book>
     @DELETE("books/removeBookByUser/{id}")
     suspend fun deleteBook(@Path("id") id: String) : Response<Book>
 
     /**NOTES*/
-
     @GET("notes/{id}")
     suspend fun getNoteById(@Path("id") id:String) : Response<Note>
     @GET("notes/myNotesFromBook/{bookId}")

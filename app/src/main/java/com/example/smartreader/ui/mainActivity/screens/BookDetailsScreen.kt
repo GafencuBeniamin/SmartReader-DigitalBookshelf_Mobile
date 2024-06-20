@@ -3,7 +3,6 @@ package com.example.smartreader.ui.mainActivity.screens
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,14 +48,20 @@ import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.ui.graphics.Color
 import com.example.smartreader.MainApplication
+import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
 
 @Composable
 fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: NavController) {
     val bookResource by viewModel.book.observeAsState(initial = Resource.loading(null))
     val bookDeleteResource by viewModel.deletedBook.observeAsState(initial = Resource.loading(null))
+    val bookWithChangedStatusResource by viewModel.bookWithChangedStatus.observeAsState(initial =  Resource.loading(null))
     val notesResource by viewModel.notesFromBook.observeAsState(initial = Resource.loading(null))
-    var showDialog by remember { mutableStateOf(false) }
+    var bookStatus : BookStatus by remember { mutableStateOf(BookStatus.PRIVATE) }
+    val idState = remember { mutableStateOf("") }
+    var showDialogDelete by remember { mutableStateOf(false) }
+    var showDialogRequest by remember { mutableStateOf(false) }
+    var showDialogCancel by remember { mutableStateOf(false) }
 
     LaunchedEffect(bookId) {
         viewModel.getBookById(bookId)
@@ -79,6 +84,10 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 }
             }
             Resource.Status.SUCCESS -> {
+                if (idState.value.isEmpty()) {
+                    idState.value = bookResource.data?.id?.toString() ?: ""
+                    bookStatus = bookResource.data?.isPublic ?: BookStatus.PRIVATE
+                }
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -155,20 +164,38 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     }
                 }
                 // Floating button request for book
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .width(200.dp)
-                            .height(56.dp)
-                            .align(Alignment.BottomCenter),
+                if (bookStatus!=BookStatus.PUBLIC){
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Text("Request to be public")
+                        FloatingActionButton(
+                            onClick = {
+                                if (bookStatus==BookStatus.PRIVATE){
+                                    showDialogRequest =true
+                                }
+                                if (bookStatus==BookStatus.PENDING){
+                                    showDialogCancel =true
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(30.dp)
+                                .width(200.dp)
+                                .height(56.dp)
+                                .align(Alignment.BottomCenter),
+                        ) {
+                            when (bookStatus){
+                                BookStatus.PRIVATE ->{
+                                    Text("Request to be public")
+                                }
+                                BookStatus.PENDING->{
+                                    Text("Cancel public request")
+                                }
+                                BookStatus.PUBLIC->{
+
+                                }
+                            }
+                        }
                     }
                 }
                 // Floating button delete
@@ -178,7 +205,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            showDialog=true
+                            showDialogDelete=true
                         },
                         modifier = Modifier
                             .padding(30.dp)
@@ -193,10 +220,115 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                         )
                     }
                 }
-                if (showDialog) {
+                //Cancel Dialog
+                if (showDialogCancel) {
                     AlertDialog(
                         onDismissRequest = {
-                            showDialog = false
+                            showDialogCancel = false
+                        },
+                        title = {
+                            Text(text = "Cancel Request")
+                        },
+                        text = {
+                            Text("You are canceling a request for a book to be public. Book will stay private until another request is made. Are you sure?")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    viewModel.changeBookStatus(bookId, BookStatus.PRIVATE)
+                                }
+                            ) {
+                                when (bookWithChangedStatusResource.status) {
+                                    Resource.Status.LOADING -> {
+                                        // Handle loading state if needed
+                                    }
+                                    Resource.Status.SUCCESS -> {
+                                        Toast.makeText(MainApplication.context, "Request canceled successfully!", Toast.LENGTH_SHORT).show()
+                                        viewModel.resetBookWithChangedStatus()
+                                        bookStatus=BookStatus.PRIVATE
+                                        showDialogCancel = false
+                                    }
+                                    Resource.Status.ERROR -> {
+                                        showDialogCancel = false
+                                        Toast.makeText(MainApplication.context, "Error: " + bookWithChangedStatusResource.message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                Text("Yes")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    showDialogCancel = false // Dismiss the dialog
+                                }
+                            ) {
+                                Text("No")
+                            }
+                        },
+                        modifier = Modifier
+                            .border(
+                                BorderStroke(2.dp, Color.LightGray),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                }
+                //Request Dialog
+                if (showDialogRequest) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showDialogRequest = false
+                        },
+                        title = {
+                            Text(text = "Confirm Request")
+                        },
+                        text = {
+                            Text("You are requesting a book to be public. Once accepted you can't modify its details anymore. Are you sure?")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    viewModel.changeBookStatus(bookId, BookStatus.PENDING)
+                                }
+                            ) {
+                                when (bookWithChangedStatusResource.status) {
+                                    Resource.Status.LOADING -> {
+                                        // Handle loading state if needed
+                                    }
+                                    Resource.Status.SUCCESS -> {
+                                        Toast.makeText(MainApplication.context, "Request made successfully!", Toast.LENGTH_SHORT).show()
+                                        viewModel.resetBookWithChangedStatus()
+                                        bookStatus=BookStatus.PENDING
+                                        showDialogRequest = false
+                                    }
+                                    Resource.Status.ERROR -> {
+                                        showDialogRequest = false
+                                        Toast.makeText(MainApplication.context, "Error: " + bookWithChangedStatusResource.message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                Text("Yes")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    showDialogRequest = false // Dismiss the dialog
+                                }
+                            ) {
+                                Text("No")
+                            }
+                        },
+                        modifier = Modifier
+                            .border(
+                                BorderStroke(2.dp, Color.LightGray),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                }
+                //Delete Dialog
+                if (showDialogDelete) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showDialogDelete = false
                         },
                         title = {
                             Text(text = "Confirm Deletion")
@@ -218,11 +350,11 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                                     Resource.Status.SUCCESS -> {
                                         Toast.makeText(MainApplication.context, "Book deleted successfully!", Toast.LENGTH_SHORT).show()
                                         viewModel.resetState()
-                                        showDialog = false
+                                        showDialogDelete = false
                                         navController.navigate("dashboard")
                                     }
                                     Resource.Status.ERROR -> {
-                                        showDialog = false
+                                        showDialogDelete = false
                                         Toast.makeText(MainApplication.context, "Error: " + bookDeleteResource.message, Toast.LENGTH_SHORT).show()
                                     }
                                 }
@@ -232,7 +364,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                         dismissButton = {
                             Button(
                                 onClick = {
-                                    showDialog = false // Dismiss the dialog
+                                    showDialogDelete = false // Dismiss the dialog
                                 }
                             ) {
                                 Text("Cancel")

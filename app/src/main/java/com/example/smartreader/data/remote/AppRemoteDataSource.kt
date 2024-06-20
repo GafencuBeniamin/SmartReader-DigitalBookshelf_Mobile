@@ -2,6 +2,7 @@ package com.example.smartreader.data.remote
 
 import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookState
+import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
@@ -17,6 +18,7 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun createBook(book: Book)= getResult { appService.createBook(book) }
     suspend fun editBook(id: String, book: Book)= getResult { appService.editBook(id, book) }
     suspend fun editPublicBook(id: String, bookState: BookState)= getResult { appService.editPublicBook(id, bookState) }
+    suspend fun changeBookStatus(id: String, bookStatus: BookStatus)= getResult { appService.changeBookStatus(id, bookStatus) }
     suspend fun deleteBook(id: String)= getResult { appService.deleteBook(id) }
     suspend fun getNoteById(id: String) =  getResult { appService.getNoteById(id) }
     suspend fun getMyNotesFromBook(bookId : String)= getResult { appService.getMyNotesFromBook(bookId) }
