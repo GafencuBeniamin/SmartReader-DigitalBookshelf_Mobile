@@ -19,6 +19,7 @@ class MainViewModel @Inject constructor(
     val repository : AppRepository
 ) : ViewModel() {
     val userLibrary = MutableLiveData<Resource<List<Book>>>()
+    val pendingBooks = MutableLiveData<Resource<List<Book>>>()
     val book = MutableLiveData<Resource<Book>>()
     val userDetails = MutableLiveData<Resource<User>>()
     val createdBook = MutableLiveData<Resource<Book>>()
@@ -43,6 +44,13 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val result = repository.remote.getBookById(id)
             book.postValue(result)
+        }
+    }
+
+    fun getPendingBooks(){
+        viewModelScope.launch {
+            val result = repository.remote.getPendingBooks()
+            pendingBooks.postValue(result)
         }
     }
 

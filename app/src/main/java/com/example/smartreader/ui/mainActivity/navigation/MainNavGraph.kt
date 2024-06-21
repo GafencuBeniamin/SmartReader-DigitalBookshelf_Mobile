@@ -15,7 +15,9 @@ import com.example.smartreader.ui.mainActivity.screens.CreateNoteScreen
 import com.example.smartreader.ui.mainActivity.screens.DashboardScreen
 import com.example.smartreader.ui.mainActivity.screens.EditBookScreen
 import com.example.smartreader.ui.mainActivity.screens.EditNoteScreen
+import com.example.smartreader.ui.mainActivity.screens.ManageBookScreen
 import com.example.smartreader.ui.mainActivity.screens.NoteDetailsScreen
+import com.example.smartreader.ui.mainActivity.screens.PendingBooksScreen
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 
 @Composable
@@ -32,11 +34,11 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
             BackHandler(true) {
                 // Do nothing when Back is clicked
             }
-            AccountScreen(viewModel)
+            AccountScreen(navController, viewModel)
         }
         //BOOKS
         composable(
-            "book_details/{bookId}",
+            "bookDetails/{bookId}",
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getString("bookId")
@@ -82,6 +84,22 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
             val noteId = backStackEntry.arguments?.getString("noteId")
             if (noteId != null) {
                 EditNoteScreen(noteId = noteId, navController = navController, viewModel = viewModel)
+            }
+        }
+        //MODERATOR
+        composable("pending") {
+            BackHandler(true) {
+                navController.navigate("account")
+            }
+            PendingBooksScreen(navController,viewModel)
+        }
+        composable(
+            "manageBook/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId")
+            if (bookId != null) {
+                ManageBookScreen(bookId = bookId, viewModel = viewModel, navController = navController)
             }
         }
     }

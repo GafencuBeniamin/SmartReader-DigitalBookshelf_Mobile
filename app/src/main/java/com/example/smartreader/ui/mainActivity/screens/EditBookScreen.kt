@@ -196,6 +196,7 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                                 genre = genreState.value,
                                 image = imageState.value,
                                 bookStates = mapOf("0" to stateState.value),
+                                isPublic = bookResource.data?.isPublic,
                                 editure = editureState.value
                             )
                             //add if book is public case

@@ -58,7 +58,6 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
     val bookWithChangedStatusResource by viewModel.bookWithChangedStatus.observeAsState(initial =  Resource.loading(null))
     val notesResource by viewModel.notesFromBook.observeAsState(initial = Resource.loading(null))
     var bookStatus : BookStatus by remember { mutableStateOf(BookStatus.PRIVATE) }
-    val idState = remember { mutableStateOf("") }
     var showDialogDelete by remember { mutableStateOf(false) }
     var showDialogRequest by remember { mutableStateOf(false) }
     var showDialogCancel by remember { mutableStateOf(false) }
@@ -72,6 +71,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
+        var isBookStatusUpdated = false
         when (bookResource.status){
             Resource.Status.LOADING -> {
                 Box(
@@ -84,8 +84,8 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 }
             }
             Resource.Status.SUCCESS -> {
-                if (idState.value.isEmpty()) {
-                    idState.value = bookResource.data?.id?.toString() ?: ""
+                if (!isBookStatusUpdated){
+                    isBookStatusUpdated=true
                     bookStatus = bookResource.data?.isPublic ?: BookStatus.PRIVATE
                 }
                 Column(
@@ -93,6 +93,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 ) {
                     Text(text = bookResource.data?.title.toString(), style = MaterialTheme.typography.h4)
                     Text(text = bookResource.data?.author.toString(), style = MaterialTheme.typography.h6)
+                    Text(text = "Status:$bookStatus", style = MaterialTheme.typography.h6)
                     // Add other book details here
                     val painter = if (bookResource.data?.image.isNullOrEmpty()) {
                         painterResource(id = R.drawable.no_image)

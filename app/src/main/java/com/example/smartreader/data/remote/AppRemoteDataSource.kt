@@ -15,6 +15,7 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun signUpUser(signUpCredentials: SignUpCredentials) = getResult{ appService.signUpUser(signUpCredentials)}
     suspend fun getMyBooks() = getResult { appService.getMyBooks() }
     suspend fun getBookById(id: String) =  getResult { appService.getBookById(id) }
+    suspend fun getPendingBooks() = getResult {appService.getPendingBooks()}
     suspend fun createBook(book: Book)= getResult { appService.createBook(book) }
     suspend fun editBook(id: String, book: Book)= getResult { appService.editBook(id, book) }
     suspend fun editPublicBook(id: String, bookState: BookState)= getResult { appService.editPublicBook(id, bookState) }

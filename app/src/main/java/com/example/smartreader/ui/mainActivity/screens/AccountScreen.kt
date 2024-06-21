@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.smartreader.MainApplication.Companion.context
 import com.example.smartreader.R
+import com.example.smartreader.data.entities.UserRole
 import com.example.smartreader.di.SessionManager
 import com.example.smartreader.ui.loginActivity.LoginActivity
 import com.example.smartreader.ui.mainActivity.MainActivity
@@ -34,7 +35,7 @@ import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 
 @Composable
-fun AccountScreen(viewModel: MainViewModel) {
+fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
 
     val userResource by viewModel.userDetails.observeAsState(initial = Resource.loading(null))
     val sessionManager = SessionManager(LocalContext.current)
@@ -95,6 +96,20 @@ fun AccountScreen(viewModel: MainViewModel) {
                         context.startActivity(intent)
                     }) {
                         Text("Logout")
+                    }
+                    if (userResource.data?.role==UserRole.ADMIN || userResource.data?.role==UserRole.MODERATOR) {
+                        // Moderator Button
+                        Button(onClick = {
+                            navController.navigate("pending")
+                        }) {
+                            Text("Manage book requests")
+                        }
+                        // Moderator Button
+                        Button(onClick = {
+
+                        }) {
+                            Text("Edit public books")
+                        }
                     }
                 }
             }

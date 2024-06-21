@@ -27,6 +27,8 @@ interface AppService {
     suspend fun getMyBooks(): Response<List<Book>>
     @GET("books/getBookByIdByUser/{id}")
     suspend fun  getBookById(@Path("id") id:String) : Response<Book>
+    @GET("books/pending")
+    suspend fun getPendingBooks() : Response<List<Book>>
     @POST("books/createNewBook")
     suspend fun createBook(@Body book: Book): Response<Book>
     @PUT("books/updateBookByUser/{id}")
