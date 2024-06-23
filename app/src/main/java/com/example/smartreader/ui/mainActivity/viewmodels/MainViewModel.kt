@@ -8,6 +8,7 @@ import com.example.smartreader.data.entities.BookState
 import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.User
+import com.example.smartreader.data.entities.UserRole
 import com.example.smartreader.data.repository.AppRepository
 import com.example.smartreader.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,9 +21,12 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val userLibrary = MutableLiveData<Resource<List<Book>>>()
     val pendingBooks = MutableLiveData<Resource<List<Book>>>()
+    val publicBooks = MutableLiveData<Resource<List<Book>>>()
     val book = MutableLiveData<Resource<Book>>()
     val userDetails = MutableLiveData<Resource<User>>()
+    val userEdited = MutableLiveData<Resource<User>>()
     val createdBook = MutableLiveData<Resource<Book>>()
+    val addedBook = MutableLiveData<Resource<Book>>()
     val editedBook = MutableLiveData<Resource<Book>>()
     val deletedBook = MutableLiveData<Resource<Book>>()
     val currentPhotoPath = MutableLiveData<String?>()
@@ -53,11 +57,29 @@ class MainViewModel @Inject constructor(
             pendingBooks.postValue(result)
         }
     }
+    fun searchPublicBooks(keyword: String){
+        viewModelScope.launch {
+            val result = repository.remote.searchPublicBooks(keyword)
+            publicBooks.postValue(result)
+        }
+    }
 
     fun createBook(book: Book){
         viewModelScope.launch {
             val result = repository.remote.createBook(book)
             createdBook.postValue(result)
+        }
+    }
+    fun addPublicBookToLibrary(id: String){
+        viewModelScope.launch {
+            val result = repository.remote.addPublicBookToLibrary(id)
+            addedBook.postValue(result)
+        }
+    }
+    fun removeBookFromLibrary(id: String){
+        viewModelScope.launch {
+            val result = repository.remote.removeBookFromLibrary(id)
+            deletedBook.postValue(result)
         }
     }
 
@@ -125,21 +147,30 @@ class MainViewModel @Inject constructor(
             userDetails.postValue(result)
         }
     }
+    fun changeUserRole(username: String, role: UserRole){
+        viewModelScope.launch {
+            val result = repository.remote.changeUserRole(username,role)
+            userEdited.postValue(result)
+        }
+    }
     fun resetState() {
         userLibrary.value = Resource.loading(null)
+        pendingBooks.value = Resource.loading(null)
+        publicBooks.value = Resource.loading(null)
         book.value = Resource.loading(null)
         userDetails.value = Resource.loading(null)
+        userEdited.value = Resource.loading(null)
         createdBook.value = Resource.loading(null)
+        addedBook. value = Resource.loading(null)
         editedBook.value = Resource.loading(null)
         deletedBook.value = Resource.loading(null)
+        currentPhotoPath.value = null
         note.value = Resource.loading(null)
         deletedNote.value = Resource.loading(null)
         editedNote.value = Resource.loading(null)
-        notesFromBook.value = Resource.loading(null)
         createdNote.value = Resource.loading(null)
         notesFromBook.value = Resource.loading(null)
         bookWithChangedStatus.value = Resource.loading(null)
-        currentPhotoPath.value = null
     }
 
     fun resetBookWithChangedStatus(){

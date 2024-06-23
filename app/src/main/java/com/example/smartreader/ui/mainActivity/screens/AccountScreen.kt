@@ -106,11 +106,18 @@ fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
                         }
                         // Moderator Button
                         Button(onClick = {
-
+                            navController.navigate("moderatorSearch")
                         }) {
                             Text("Edit public books")
                         }
                     }
+                    if(userResource.data?.role==UserRole.ADMIN)
+                    // Moderator Button
+                        Button(onClick = {
+                            navController.navigate("changeUserRole")
+                        }) {
+                            Text("Change user role")
+                        }
                 }
             }
             Resource.Status.ERROR -> {

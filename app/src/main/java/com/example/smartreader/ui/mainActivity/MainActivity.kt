@@ -41,7 +41,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val currentRoute = navBackStackEntry?.destination?.route
     Scaffold(
         bottomBar = {
-            if (currentRoute == "dashboard" || currentRoute=="account") {
+            if (currentRoute == "dashboard" || currentRoute=="account" || currentRoute=="search") {
                 BottomNavigationBar(navController = navController)
             }
         }

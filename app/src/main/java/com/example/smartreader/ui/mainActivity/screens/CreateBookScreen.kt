@@ -141,7 +141,7 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                 }
             }
 
-            ImagePicker(viewModel = viewModel, isPublic = false, onImagePicked = { uri ->
+            ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
                 imageState.value = uri.toString()
             })
 

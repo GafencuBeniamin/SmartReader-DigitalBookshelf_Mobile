@@ -12,5 +12,5 @@ import com.example.smartreader.R
 sealed class BottomNavItem(val route: String, @StringRes val title: Int, val icon: ImageVector) {
     object Dashboard : BottomNavItem("dashboard", R.string.dashboard, Icons.Filled.Home)
     object Account : BottomNavItem("account", R.string.account, Icons.Filled.AccountCircle)
-    object Search : BottomNavItem("account",R.string.search, Icons.Filled.Search)
+    object Search : BottomNavItem("search",R.string.search, Icons.Filled.Search)
 }

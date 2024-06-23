@@ -149,7 +149,12 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate("editBook/$bookId")
+                            if (bookStatus!=BookStatus.PUBLIC) {
+                                navController.navigate("editBook/$bookId")
+                            } else {
+                                navController.navigate("changeBookState/$bookId")
+                            }
+
                         },
                         modifier = Modifier
                             .padding(30.dp)
@@ -335,12 +340,21 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                             Text(text = "Confirm Deletion")
                         },
                         text = {
-                            Text("Are you sure you want to delete this book?")
+                            if (bookStatus!=BookStatus.PUBLIC){
+                                Text("Are you sure you want to delete this book? All data will be permanently lost")
+                            } else {
+                                Text("Are you sure you want to delete this book from library?")
+                            }
+
                         },
                         confirmButton = {
                             Button(
                                 onClick = {
-                                    viewModel.deleteBook(bookId)
+                                    if (bookStatus!=BookStatus.PUBLIC) {
+                                        viewModel.deleteBook(bookId)
+                                    } else {
+                                        viewModel.removeBookFromLibrary(bookId)
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFFC0CB))
                             ) {

@@ -46,7 +46,7 @@ import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 
 @Composable
-fun EditBookScreen(bookId: String, navController: NavController, viewModel: MainViewModel) {
+fun ChangeBookStateScreen(bookId: String, navController: NavController, viewModel: MainViewModel) {
     val bookResource by viewModel.book.observeAsState(initial = Resource.loading(null))
     val bookEditResource by viewModel.editedBook.observeAsState(initial = Resource.loading(null))
     val idState = remember { mutableStateOf("") }
@@ -99,46 +99,6 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(
-                        value = titleState.value,
-                        onValueChange = { titleState.value = it },
-                        label = { Text("Title") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = authorState.value,
-                        onValueChange = { authorState.value = it },
-                        label = { Text("Author") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = editureState.value,
-                        onValueChange = { editureState.value = it },
-                        label = { Text("Editure") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = pagesState.value,
-                        onValueChange = { pagesState.value = it },
-                        label = { Text("Number of Pages") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = languageState.value,
-                        onValueChange = { languageState.value = it },
-                        label = { Text("Language") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = genreState.value,
-                        onValueChange = { genreState.value = it },
-                        label = { Text("Genre") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     ExposedDropdownMenuBox(
                         options = bookStateOptions,
@@ -175,36 +135,20 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         }
                     }
 
-                    ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
-                        imageState.value = uri.toString()
-                    })
-
                     Button(
                         onClick = {
-                            val book = Book(
-                                title = titleState.value,
-                                author = setOf(authorState.value),
-                                noOfPages = pagesState.value.toIntOrNull(),
-                                language = languageState.value,
-                                genre = genreState.value,
-                                image = imageState.value,
-                                bookStates = mapOf("0" to stateState.value),
-                                isPublic = bookResource.data?.isPublic,
-                                editure = editureState.value
-                            )
-                            //add if book is public case
-                            viewModel.editBook(bookId, book)
+                            viewModel.editPublicBook(bookId, stateState.value)
                         },
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
-                        Text("Edit Book")
+                        Text("Edit Book State")
                         when (bookEditResource.status) {
                             Resource.Status.LOADING -> {
                                 // Handle loading state if needed
                             }
 
                             Resource.Status.SUCCESS -> {
-                                Toast.makeText(context, "Book edited successfully!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Book state changed successfully!", Toast.LENGTH_SHORT).show()
                                 viewModel.resetState()
                                 navController.navigate("dashboard")
                             }

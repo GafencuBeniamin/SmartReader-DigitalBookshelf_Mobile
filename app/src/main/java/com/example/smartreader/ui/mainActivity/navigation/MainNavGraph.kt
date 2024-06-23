@@ -10,14 +10,20 @@ import androidx.navigation.navArgument
 import com.example.smartreader.ui.loginActivity.screens.StartScreen
 import com.example.smartreader.ui.mainActivity.screens.AccountScreen
 import com.example.smartreader.ui.mainActivity.screens.BookDetailsScreen
+import com.example.smartreader.ui.mainActivity.screens.ChangeBookStateScreen
+import com.example.smartreader.ui.mainActivity.screens.ChangeUserRoleScreen
 import com.example.smartreader.ui.mainActivity.screens.CreateBookScreen
 import com.example.smartreader.ui.mainActivity.screens.CreateNoteScreen
 import com.example.smartreader.ui.mainActivity.screens.DashboardScreen
 import com.example.smartreader.ui.mainActivity.screens.EditBookScreen
 import com.example.smartreader.ui.mainActivity.screens.EditNoteScreen
 import com.example.smartreader.ui.mainActivity.screens.ManageBookScreen
+import com.example.smartreader.ui.mainActivity.screens.ModeratorBookDetails
+import com.example.smartreader.ui.mainActivity.screens.ModeratorSearchScreen
 import com.example.smartreader.ui.mainActivity.screens.NoteDetailsScreen
 import com.example.smartreader.ui.mainActivity.screens.PendingBooksScreen
+import com.example.smartreader.ui.mainActivity.screens.SearchScreen
+import com.example.smartreader.ui.mainActivity.screens.SearchedBookScreen
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 
 @Composable
@@ -35,6 +41,22 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
                 // Do nothing when Back is clicked
             }
             AccountScreen(navController, viewModel)
+        }
+        composable("search") {
+            BackHandler(true) {
+                // Do nothing when Back is clicked
+            }
+            SearchScreen(navController,viewModel)
+        }
+        //SEARCH
+        composable(
+            "searchedBook/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId")
+            if (bookId != null) {
+                SearchedBookScreen(bookId = bookId, viewModel = viewModel, navController = navController)
+            }
         }
         //BOOKS
         composable(
@@ -56,6 +78,15 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
             val bookId = backStackEntry.arguments?.getString("bookId")
             if (bookId != null) {
                 EditBookScreen(bookId = bookId, navController = navController, viewModel = viewModel)
+            }
+        }
+        composable(
+            "changeBookState/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId")
+            if (bookId != null) {
+                ChangeBookStateScreen(bookId = bookId, navController = navController, viewModel = viewModel)
             }
         }
         //NOTES
@@ -101,6 +132,21 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
             if (bookId != null) {
                 ManageBookScreen(bookId = bookId, viewModel = viewModel, navController = navController)
             }
+        }
+        composable("moderatorSearch") {
+            ModeratorSearchScreen(navController,viewModel)
+        }
+        composable(
+            "moderatorBookDetails/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId")
+            if (bookId != null) {
+                ModeratorBookDetails(bookId = bookId, viewModel = viewModel, navController = navController)
+            }
+        }
+        composable("changeUserRole") {
+            ChangeUserRoleScreen(navController,viewModel)
         }
     }
 }

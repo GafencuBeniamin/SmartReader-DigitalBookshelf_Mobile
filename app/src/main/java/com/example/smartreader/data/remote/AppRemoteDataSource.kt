@@ -6,6 +6,7 @@ import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
+import com.example.smartreader.data.entities.UserRole
 import javax.inject.Inject
 
 class AppRemoteDataSource @Inject constructor(
@@ -16,7 +17,10 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun getMyBooks() = getResult { appService.getMyBooks() }
     suspend fun getBookById(id: String) =  getResult { appService.getBookById(id) }
     suspend fun getPendingBooks() = getResult {appService.getPendingBooks()}
+    suspend fun searchPublicBooks(keyword: String)= getResult { appService.searchPublicBooks(keyword) }
     suspend fun createBook(book: Book)= getResult { appService.createBook(book) }
+    suspend fun addPublicBookToLibrary(id: String) = getResult { appService.addPublicBookToLibrary(id) }
+    suspend fun removeBookFromLibrary(id: String) = getResult { appService.removeBookFromLibrary(id) }
     suspend fun editBook(id: String, book: Book)= getResult { appService.editBook(id, book) }
     suspend fun editPublicBook(id: String, bookState: BookState)= getResult { appService.editPublicBook(id, bookState) }
     suspend fun changeBookStatus(id: String, bookStatus: BookStatus)= getResult { appService.changeBookStatus(id, bookStatus) }
@@ -27,4 +31,5 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun editNote(id:String, note:Note) = getResult { appService.editNote(id,note) }
     suspend fun deleteNote(id: String)= getResult { appService.deleteNote(id) }
     suspend fun getMyDetails() =  getResult { appService.getMyDetails() }
+    suspend fun changeUserRole(username: String, role: UserRole) = getResult { appService.changeUserRole(username,role) }
 }

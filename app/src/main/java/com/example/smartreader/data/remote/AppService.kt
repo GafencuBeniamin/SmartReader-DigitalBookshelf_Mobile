@@ -7,6 +7,7 @@ import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.data.entities.User
+import com.example.smartreader.data.entities.UserRole
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -29,8 +30,14 @@ interface AppService {
     suspend fun  getBookById(@Path("id") id:String) : Response<Book>
     @GET("books/pending")
     suspend fun getPendingBooks() : Response<List<Book>>
+    @GET("books/search/{keyword}")
+    suspend fun searchPublicBooks(@Path("keyword") keyword: String): Response<List<Book>>
     @POST("books/createNewBook")
     suspend fun createBook(@Body book: Book): Response<Book>
+    @PUT("books/addNewBookToUserLibrary/{id}")
+    suspend fun addPublicBookToLibrary(@Path("id") id:String) : Response<Book>
+    @PUT("books/removeBookFromUserLibrary/{id}")
+    suspend fun removeBookFromLibrary(@Path("id") id:String) : Response<Book>
     @PUT("books/updateBookByUser/{id}")
     suspend fun editBook(@Path("id") id:String, @Body book: Book) : Response<Book>
     @PUT("books/updatePublicBookByUser/{id}")
@@ -55,4 +62,7 @@ interface AppService {
     /**USER*/
     @GET("user/myDetails")
     suspend fun getMyDetails() : Response<User>
+    @PUT("user/changeUserRole/{username}")
+    suspend fun changeUserRole(@Path("username") username: String, @Body role: UserRole) : Response<User>
+
 }
