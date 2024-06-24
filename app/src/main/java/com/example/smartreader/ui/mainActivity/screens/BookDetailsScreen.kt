@@ -3,13 +3,18 @@ package com.example.smartreader.ui.mainActivity.screens
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +27,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -48,9 +54,12 @@ import com.example.smartreader.R
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import com.example.smartreader.MainApplication
+import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
+import com.example.smartreader.ui.mainActivity.utils.BookDetails
 import com.example.smartreader.ui.mainActivity.utils.DeleteFloatingButton
 import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 
@@ -94,37 +103,15 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(text = bookResource.data?.title.toString(), style = MaterialTheme.typography.h4)
-                    Text(text = bookResource.data?.author.toString(), style = MaterialTheme.typography.h6)
-                    Text(text = "Status:$bookStatus", style = MaterialTheme.typography.h6)
-                    // Add other book details here
-                    val placeHolder = if (!isSystemInDarkTheme()) {
-                        R.drawable.no_image
-                    } else {
-                        R.drawable.no_image_white
-                    }
-                    val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = placeHolder)
-                    } else {
-                        rememberAsyncImagePainter(model = bookResource.data?.image)
-                    }
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(end = 16.dp),
-                        contentScale = ContentScale.Crop
-                    )
-
+                    BookDetails(bookResource = bookResource, bookStatus = bookStatus)
                     //List of Notes
-                    when (notesResource.status){
-                        Resource.Status.SUCCESS ->{
+                    when (notesResource.status) {
+                        Resource.Status.SUCCESS -> {
                             notesResource.data?.let { notes ->
                                 // Sort the notes by page
                                 val sortedNotes = notes.sortedBy { it.page }
 
-                                LazyRow( modifier = Modifier.padding(vertical = 16.dp)){
+                                LazyRow(modifier = Modifier.padding(vertical = 16.dp)) {
                                     items(sortedNotes) { note ->
                                         NoteItem(note = note) { noteId ->
                                             navController.navigate("noteDetails/$noteId")
@@ -134,15 +121,21 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
 
                             }
                         }
-                        Resource.Status.LOADING->{
+
+                        Resource.Status.LOADING -> {
 
                         }
-                        Resource.Status.ERROR->{
+
+                        Resource.Status.ERROR -> {
 
                         }
                     }
                     //Button add note
                     Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(16.dp),
                         onClick = {
                             navController.navigate("createNote/$bookId")
                         }

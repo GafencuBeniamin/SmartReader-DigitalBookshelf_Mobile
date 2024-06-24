@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -42,6 +43,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.smartreader.MainApplication
 import com.example.smartreader.R
 import com.example.smartreader.data.entities.BookStatus
+import com.example.smartreader.ui.mainActivity.utils.BookDetails
 import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
@@ -75,33 +77,8 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(
-                        text = bookResource.data?.title.toString(),
-                        style = MaterialTheme.typography.h4
-                    )
-                    Text(
-                        text = bookResource.data?.author.toString(),
-                        style = MaterialTheme.typography.h6
-                    )
-                    // Add other book details here
-                    val placeHolder = if (!isSystemInDarkTheme()) {
-                        R.drawable.no_image
-                    } else {
-                        R.drawable.no_image_white
-                    }
-                    val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = placeHolder)
-                    } else {
-                        rememberAsyncImagePainter(model = bookResource.data?.image)
-                    }
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(end = 16.dp),
-                        contentScale = ContentScale.Crop
-                    )
+                    val bookStatus = bookResource.data?.isPublic ?: BookStatus.PRIVATE
+                    BookDetails(bookResource = bookResource, bookStatus = bookStatus)
                 }
                 // Floating button Decline
                 val declineButtonBackgroundColor = if (isSystemInDarkTheme()) {
@@ -173,6 +150,7 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                         },
                         confirmButton = {
                             Button(
+                                colors = ButtonDefaults.buttonColors(backgroundColor = acceptButtonBackgroundColor),
                                 onClick = {
                                     viewModel.changeBookStatus(bookId, BookStatus.PUBLIC)
                                 }
@@ -225,6 +203,7 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                         },
                         confirmButton = {
                             Button(
+                                colors = ButtonDefaults.buttonColors(backgroundColor = declineButtonBackgroundColor),
                                 onClick = {
                                     viewModel.changeBookStatus(bookId, BookStatus.PRIVATE)
                                 }
