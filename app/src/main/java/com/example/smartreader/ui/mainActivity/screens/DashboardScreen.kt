@@ -3,6 +3,7 @@ package com.example.smartreader.ui.mainActivity.screens
 import android.util.Log
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -15,8 +16,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.MaterialTheme
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -84,11 +89,34 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
                     LazyColumn {
                         sortedGroupedBooks.forEach { (state, books) ->
                             item {
-                                Text(
-                                    text = state.toString(),
-                                    style = MaterialTheme.typography.h5,
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                Card(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .fillMaxWidth()
+                                        .border(color = MaterialTheme.colors.primary,width = 2.dp, shape = RoundedCornerShape(8.dp)), // Ensure the card takes full width
+                                    shape = RoundedCornerShape(8.dp), // Rounded corners
+                                    elevation = 4.dp // Optional: Add elevation for a shadow effect
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .fillMaxWidth(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        val stateText = when (state.toString()) {
+                                            "READING" -> "READING"
+                                            "TO_BE_READ" -> "TO BE READ"
+                                            "FINISHED" -> "FINISHED"
+                                            "DROPPED" -> "DROPPED"
+                                            else -> "Unknown"
+                                        }
+                                        Text(
+                                            text = stateText,
+                                            style = MaterialTheme.typography.body1,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                             }
                             items(books.sortedBy { it.title }) { book ->
                                 BookItem(book = book) { bookId ->
