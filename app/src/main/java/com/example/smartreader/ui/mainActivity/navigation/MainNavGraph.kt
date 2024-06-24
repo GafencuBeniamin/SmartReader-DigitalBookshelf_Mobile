@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.example.smartreader.ui.loginActivity.screens.StartScreen
 import com.example.smartreader.ui.mainActivity.screens.AccountScreen
 import com.example.smartreader.ui.mainActivity.screens.BookDetailsScreen
+import com.example.smartreader.ui.mainActivity.screens.ChangeAccountDetails
 import com.example.smartreader.ui.mainActivity.screens.ChangeBookStateScreen
 import com.example.smartreader.ui.mainActivity.screens.ChangeUserRoleScreen
 import com.example.smartreader.ui.mainActivity.screens.CreateBookScreen
@@ -57,6 +58,10 @@ fun MainNavGraph(navController: NavHostController, viewModel: MainViewModel) {
             if (bookId != null) {
                 SearchedBookScreen(bookId = bookId, viewModel = viewModel, navController = navController)
             }
+        }
+        //USER
+        composable("changeAccountDetails") {
+            ChangeAccountDetails(navController,viewModel)
         }
         //BOOKS
         composable(

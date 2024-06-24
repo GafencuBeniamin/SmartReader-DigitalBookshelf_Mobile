@@ -64,5 +64,6 @@ interface AppService {
     suspend fun getMyDetails() : Response<User>
     @PUT("user/changeUserRole/{username}")
     suspend fun changeUserRole(@Path("username") username: String, @Body role: UserRole) : Response<User>
-
+    @PUT("user/updateMyDetails")
+    suspend fun updateMyDetails(@Body user: User) : Response<User>
 }

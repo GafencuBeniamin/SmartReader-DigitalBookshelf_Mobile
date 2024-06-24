@@ -153,6 +153,12 @@ class MainViewModel @Inject constructor(
             userEdited.postValue(result)
         }
     }
+    fun updateMyDetails(user: User){
+        viewModelScope.launch {
+            val result = repository.remote.updateMyDetails(user)
+            userEdited.postValue(result)
+        }
+    }
     fun resetState() {
         userLibrary.value = Resource.loading(null)
         pendingBooks.value = Resource.loading(null)

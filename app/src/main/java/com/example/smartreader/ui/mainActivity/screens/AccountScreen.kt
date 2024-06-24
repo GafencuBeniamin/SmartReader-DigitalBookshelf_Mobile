@@ -11,9 +11,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,7 +29,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.smartreader.MainApplication.Companion.context
 import com.example.smartreader.R
 import com.example.smartreader.data.entities.UserRole
@@ -65,16 +72,19 @@ fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    userResource.data?.picture.let {
-                        Image(
-                            painter = painterResource(id = R.drawable.no_image),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(128.dp)
-                                .padding(bottom = 16.dp),
-                            contentScale = ContentScale.Crop
-                        )
+                    val painter = if (userResource.data?.picture.isNullOrEmpty()) {
+                        painterResource(id = R.drawable.no_image)
+                    } else {
+                        rememberAsyncImagePainter(model = userResource.data?.picture)
                     }
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(end = 16.dp),
+                        contentScale = ContentScale.Fit
+                    )
                     userResource.data?.username?.let {
                         Text(text = "Username: $it", modifier = Modifier.padding(bottom = 8.dp))
                     }
@@ -83,9 +93,6 @@ fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
                     }
                     userResource.data?.role?.let {
                         Text(text = "Role: ${it.name}", modifier = Modifier.padding(bottom = 8.dp))
-                    }
-                    userResource.data?.token?.let {
-                        Text(text = "Token: $it", modifier = Modifier.padding(bottom = 8.dp))
                     }
                     // Logout Button
                     Button(onClick = {
@@ -111,13 +118,34 @@ fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
                             Text("Edit public books")
                         }
                     }
-                    if(userResource.data?.role==UserRole.ADMIN)
+                    if (userResource.data?.role == UserRole.ADMIN)
                     // Moderator Button
                         Button(onClick = {
                             navController.navigate("changeUserRole")
                         }) {
                             Text("Change user role")
                         }
+                }
+                // Floating button
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("changeAccountDetails")
+                        },
+                        modifier = Modifier
+                            .padding(30.dp)
+                            .size(56.dp)
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Change Account Details",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
             Resource.Status.ERROR -> {

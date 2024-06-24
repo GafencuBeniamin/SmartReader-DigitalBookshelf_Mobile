@@ -6,6 +6,7 @@ import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.data.entities.SignUpCredentials
+import com.example.smartreader.data.entities.User
 import com.example.smartreader.data.entities.UserRole
 import javax.inject.Inject
 
@@ -32,4 +33,5 @@ class AppRemoteDataSource @Inject constructor(
     suspend fun deleteNote(id: String)= getResult { appService.deleteNote(id) }
     suspend fun getMyDetails() =  getResult { appService.getMyDetails() }
     suspend fun changeUserRole(username: String, role: UserRole) = getResult { appService.changeUserRole(username,role) }
+    suspend fun updateMyDetails(user : User) = getResult { appService.updateMyDetails(user) }
 }
