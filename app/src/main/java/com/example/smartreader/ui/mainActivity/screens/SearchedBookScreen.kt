@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,8 +78,13 @@ fun SearchedBookScreen(bookId: String, viewModel: MainViewModel, navController: 
                         style = MaterialTheme.typography.h6
                     )
                     // Add other book details here
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = R.drawable.no_image)
+                        painterResource(id = placeHolder)
                     } else {
                         rememberAsyncImagePainter(model = bookResource.data?.image)
                     }

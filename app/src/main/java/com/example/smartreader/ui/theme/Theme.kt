@@ -1,7 +1,6 @@
 package com.example.smartreader.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -10,18 +9,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorPalette = darkColors(
-    primary = Brown80,
-    secondary = BrownGrey80,
+    primary = Grey80,
+    secondary = LightGrey80,
+    onPrimary = Color.White,
+    onSecondary = Color.White
 )
 
 private val LightColorPalette = lightColors(
-    primary = Brown40,
-    secondary = BrownGrey40,
+    primary = Grey40,
+    secondary = LightGrey40,
+    onPrimary = Color.Black,
+    onSecondary = Color.Black
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

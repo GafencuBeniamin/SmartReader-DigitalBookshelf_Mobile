@@ -1,9 +1,11 @@
 package com.example.smartreader.ui.mainActivity.screens
 
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +42,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.smartreader.MainApplication
 import com.example.smartreader.R
 import com.example.smartreader.data.entities.BookStatus
+import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 
@@ -81,8 +84,13 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                         style = MaterialTheme.typography.h6
                     )
                     // Add other book details here
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = R.drawable.no_image)
+                        painterResource(id = placeHolder)
                     } else {
                         rememberAsyncImagePainter(model = bookResource.data?.image)
                     }
@@ -96,6 +104,11 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                     )
                 }
                 // Floating button Decline
+                val declineButtonBackgroundColor = if (isSystemInDarkTheme()) {
+                    Color(0xFF800000) // Dark theme color
+                } else {
+                    Color(0xFFFFC0CB) // Light theme color
+                }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
@@ -108,7 +121,7 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                             .padding(30.dp)
                             .size(56.dp)
                             .align(Alignment.BottomEnd),
-                        backgroundColor = Color(0xFFFFC0CB)
+                        backgroundColor = declineButtonBackgroundColor
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -118,6 +131,11 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                     }
                 }
                 // Floating button Accept
+                val acceptButtonBackgroundColor = if (isSystemInDarkTheme()) {
+                    Color(0xFF006400) // Dark theme color
+                } else {
+                    Color(0xFF90EE90) // Light theme color
+                }
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
@@ -129,8 +147,8 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                         modifier = Modifier
                             .padding(30.dp)
                             .size(56.dp)
-                            .align(Alignment.BottomStart),
-                        backgroundColor = Color(0xFF90EE90)
+                            .align(Alignment.BottomCenter),
+                        backgroundColor = acceptButtonBackgroundColor
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -140,27 +158,7 @@ fun ManageBookScreen(bookId: String, viewModel: MainViewModel, navController: Na
                     }
                 }
                 // Floating button edit
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate("editBook/$bookId")
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomCenter),
-                        backgroundColor = Color(0xFFADD8E6)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Book",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+                EditFloatingButton(onClick = {navController.navigate("editBook/$bookId")})
                 //Accept Dialog
                 if (showDialogAccept) {
                     AlertDialog(

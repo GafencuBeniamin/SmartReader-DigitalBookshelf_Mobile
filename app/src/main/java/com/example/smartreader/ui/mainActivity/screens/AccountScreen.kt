@@ -2,6 +2,7 @@ package com.example.smartreader.ui.mainActivity.screens
 
 import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -72,8 +73,13 @@ fun AccountScreen(navController: NavController, viewModel: MainViewModel) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     val painter = if (userResource.data?.picture.isNullOrEmpty()) {
-                        painterResource(id = R.drawable.no_image)
+                        painterResource(id = placeHolder)
                     } else {
                         rememberAsyncImagePainter(model = userResource.data?.picture)
                     }

@@ -67,8 +67,7 @@ fun CameraPreviewScanner(onTextRecognized: (String) -> Unit, onClose: () -> Unit
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = Color.White
+                    contentDescription = "Close"
                 )
             }
         }
@@ -88,8 +87,7 @@ fun CameraPreviewScanner(onTextRecognized: (String) -> Unit, onClose: () -> Unit
             ) {
                 Icon(
                     imageVector = Icons.Default.DocumentScanner,
-                    contentDescription = "Scan",
-                    tint = Color.White
+                    contentDescription = "Scan"
                 )
             }
         }

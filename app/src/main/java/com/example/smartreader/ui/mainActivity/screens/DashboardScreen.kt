@@ -1,11 +1,15 @@
 package com.example.smartreader.ui.mainActivity.screens
 
+import android.util.Log
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,21 +46,16 @@ import kotlinx.coroutines.delay
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
     val booksResource by viewModel.userLibrary.observeAsState(initial = Resource.loading(null))
-    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        // Fetch data every time the screen is opened
         viewModel.getMyBooks()
-        // Add a delay to let data fetch
-        delay(200)
-        isLoading = false
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        when(isLoading) {
-            true -> {
+        when (booksResource.status) {
+            Resource.Status.LOADING -> {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
@@ -66,54 +65,61 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
                     )
                 }
             }
-            false -> {
-                when (booksResource.status) {
-                    Resource.Status.LOADING -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(100.dp)
-                            )
+            Resource.Status.SUCCESS -> {
+                booksResource.data?.let { books ->
+                    val groupedBooks = books.groupBy { it.bookStates?.values?.firstOrNull() ?: "UNKNOWN" }
+                    val customOrder = listOf("READING", "TO_BE_READ", "DROPPED", "FINISHED", "UNKNOWN")
+                    // Define a comparator that sorts states according to the 'customOrder' list
+                    val stateComparator = Comparator<String> { state1, state2 ->
+                        val index1 = customOrder.indexOf(state1)
+                        val index2 = customOrder.indexOf(state2)
+                        when {
+                            index1 == -1 && index2 == -1 -> 0 // both are UNKNOWN, treat as equal
+                            index1 == -1 -> 1 // state1 is UNKNOWN, push it to the end
+                            index2 == -1 -> -1 // state2 is UNKNOWN, push it to the end
+                            else -> index1.compareTo(index2)
                         }
                     }
-                    Resource.Status.SUCCESS -> {
-                        booksResource.data?.let { books ->
-                            LazyColumn {
-                                items(books) { book ->
-                                    BookItem(book = book) { bookId ->
-                                        navController.navigate("bookDetails/$bookId")
-                                    }
+                    val sortedGroupedBooks = groupedBooks.mapKeys { it.key.toString() }.toSortedMap(stateComparator)
+                    LazyColumn {
+                        sortedGroupedBooks.forEach { (state, books) ->
+                            item {
+                                Text(
+                                    text = state.toString(),
+                                    style = MaterialTheme.typography.h5,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                            items(books.sortedBy { it.title }) { book ->
+                                BookItem(book = book) { bookId ->
+                                    navController.navigate("bookDetails/$bookId")
                                 }
                             }
                         }
-                        // Floating button
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            FloatingActionButton(
-                                onClick = {
-                                    navController.navigate("createBook")
-                                },
-                                modifier = Modifier
-                                    .padding(30.dp)
-                                    .size(56.dp)
-                                    .align(Alignment.BottomEnd)
-                            ) {
-                                Text("+", fontSize = 24.sp)
-                            }
-                        }
-                    }
-                    Resource.Status.ERROR -> {
-                        Text("Error: " + booksResource.message)
                     }
                 }
-
+                // Floating button
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("createBook")
+                        },
+                        modifier = Modifier
+                            .padding(30.dp)
+                            .size(56.dp)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Text("+", fontSize = 24.sp)
+                    }
+                }
+            }
+            Resource.Status.ERROR -> {
+                Text("Error: " + booksResource.message)
             }
         }
-
     }
 }
 
@@ -126,11 +132,15 @@ fun BookItem(book: Book, onClick: (String) -> Unit) {
             .clickable { onClick(book.id.toString()) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val painter = if (book.image == null) {
-            painterResource(id = R.drawable.no_image)
+        val placeHolder = if (!isSystemInDarkTheme()) {
+            R.drawable.no_image
         } else {
-            // Assuming book.image is a painter resource ID
-            rememberAsyncImagePainter(model = book.image)
+            R.drawable.no_image_white
+        }
+        val painter = if (book.image.isNullOrEmpty()) {
+            painterResource(id = placeHolder)
+        } else {
+            rememberAsyncImagePainter(model = book.image, contentScale = ContentScale.Fit)
         }
         Image(
             painter = painter,
@@ -138,7 +148,6 @@ fun BookItem(book: Book, onClick: (String) -> Unit) {
             modifier = Modifier
                 .size(100.dp)
                 .padding(end = 16.dp),
-            contentScale = ContentScale.Fit
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(text = book.title.toString(), style = MaterialTheme.typography.h6)

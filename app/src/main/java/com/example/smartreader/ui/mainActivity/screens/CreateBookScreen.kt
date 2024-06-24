@@ -2,6 +2,7 @@ package com.example.smartreader.ui.mainActivity.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -132,8 +133,13 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                         contentScale = ContentScale.Fit
                     )
                 } else {
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     Image(
-                        painter = painterResource(id = R.drawable.no_image),
+                        painter = painterResource(id = placeHolder),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
                         contentScale = ContentScale.Fit

@@ -92,7 +92,7 @@ fun ChangeUserRoleScreen(navController: NavController, viewModel: MainViewModel)
             ) {
                 Text("Change User Role")
             }
-            //Delete Dialog
+            //Confirm Dialog
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,8 @@ import androidx.compose.ui.graphics.Color
 import com.example.smartreader.MainApplication
 import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
+import com.example.smartreader.ui.mainActivity.utils.DeleteFloatingButton
+import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 
 @Composable
 fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: NavController) {
@@ -95,8 +98,13 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     Text(text = bookResource.data?.author.toString(), style = MaterialTheme.typography.h6)
                     Text(text = "Status:$bookStatus", style = MaterialTheme.typography.h6)
                     // Add other book details here
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = R.drawable.no_image)
+                        painterResource(id = placeHolder)
                     } else {
                         rememberAsyncImagePainter(model = bookResource.data?.image)
                     }
@@ -143,32 +151,13 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     }
                 }
                 // Floating button edit
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            if (bookStatus!=BookStatus.PUBLIC) {
-                                navController.navigate("editBook/$bookId")
-                            } else {
-                                navController.navigate("changeBookState/$bookId")
-                            }
-
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomStart),
-                        backgroundColor = Color(0xFFADD8E6)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Book",
-                            modifier = Modifier.size(24.dp)
-                        )
+                EditFloatingButton (onClick = {
+                    if (bookStatus!=BookStatus.PUBLIC) {
+                        navController.navigate("editBook/$bookId")
+                    } else {
+                        navController.navigate("changeBookState/$bookId")
                     }
-                }
+                })
                 // Floating button request for book
                 if (bookStatus!=BookStatus.PUBLIC){
                     Box(
@@ -205,27 +194,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     }
                 }
                 // Floating button delete
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            showDialogDelete=true
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomEnd),
-                        backgroundColor = Color(0xFFFFC0CB)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Book",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+                DeleteFloatingButton(onClick = {showDialogDelete=true})
                 //Cancel Dialog
                 if (showDialogCancel) {
                     AlertDialog(
@@ -331,6 +300,11 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                     )
                 }
                 //Delete Dialog
+                val deleteButtonBackgroundColor = if (isSystemInDarkTheme()) {
+                    Color(0xFF800000) // Dark theme color
+                } else {
+                    Color(0xFFFFC0CB) // Light theme color
+                }
                 if (showDialogDelete) {
                     AlertDialog(
                         onDismissRequest = {
@@ -356,7 +330,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                                         viewModel.removeBookFromLibrary(bookId)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFFC0CB))
+                                colors = ButtonDefaults.buttonColors(backgroundColor = deleteButtonBackgroundColor)
                             ) {
                                 when (bookDeleteResource.status) {
                                     Resource.Status.LOADING -> {
@@ -403,12 +377,17 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
 }
 @Composable
 fun NoteItem(note: Note, onClick: (String) -> Unit) {
+    val noteColor = if (isSystemInDarkTheme()) {
+        Color(0xFF654321) // Dark theme color
+    } else {
+        Color(0xFFFFFFE0) // Light theme color
+    }
     Card(
         modifier = Modifier
             .padding(8.dp)
             .size(150.dp, 100.dp)
             .clickable { onClick(note.id.toString()) },
-        backgroundColor = Color(0xFFFFFFE0),
+        backgroundColor = noteColor,
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp
     ) {

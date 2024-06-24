@@ -3,6 +3,7 @@ package com.example.smartreader.ui.mainActivity.screens
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.smartreader.MainApplication
 import com.example.smartreader.data.entities.Note
+import com.example.smartreader.ui.mainActivity.utils.DeleteFloatingButton
+import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 
@@ -68,48 +71,14 @@ fun NoteDetailsScreen(noteId: String, viewModel: MainViewModel, navController: N
                 NoteDetails(note = note, navController = navController)
             }
             // Floating button edit
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        navController.navigate("editNote/$noteId")
-                    },
-                    modifier = Modifier
-                        .padding(30.dp)
-                        .size(56.dp)
-                        .align(Alignment.BottomStart),
-                    backgroundColor = Color(0xFFADD8E6)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Note",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+            EditFloatingButton(onClick = { navController.navigate("editNote/$noteId") })
             // Floating button delete
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        showDialog=true
-                    },
-                    modifier = Modifier
-                        .padding(30.dp)
-                        .size(56.dp)
-                        .align(Alignment.BottomEnd),
-                    backgroundColor = Color(0xFFFFC0CB)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Book",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+            DeleteFloatingButton(onClick = {showDialog=true})
+            //Delete Dialog
+            val deleteButtonBackgroundColor = if (isSystemInDarkTheme()) {
+                Color(0xFF800000) // Dark theme color
+            } else {
+                Color(0xFFFFC0CB) // Light theme color
             }
             if (showDialog) {
                 AlertDialog(
@@ -127,7 +96,7 @@ fun NoteDetailsScreen(noteId: String, viewModel: MainViewModel, navController: N
                             onClick = {
                                 viewModel.deleteNote(noteId)
                             },
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFFC0CB))
+                            colors = ButtonDefaults.buttonColors(backgroundColor = deleteButtonBackgroundColor)
                         ) {
                             when (noteDeleteResource.status) {
                                 Resource.Status.LOADING -> {
@@ -199,14 +168,12 @@ fun NoteDetails(note: Note, navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            BasicTextField(
-                value = note.content ?: "No Content",
-                onValueChange = {},
+            Text(
+                text = note.content ?: "No Content",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                readOnly = true,
-                textStyle = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1
             )
             Text(
                 text = "Comment:",
@@ -214,14 +181,12 @@ fun NoteDetails(note: Note, navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            BasicTextField(
-                value = note.comment ?: "No Comment",
-                onValueChange = {},
+            Text(
+                text = note.comment ?: "No Comment",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                readOnly = true,
-                textStyle = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(

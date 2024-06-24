@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,8 @@ import androidx.compose.ui.graphics.Color
 import com.example.smartreader.MainApplication
 import com.example.smartreader.data.entities.BookStatus
 import com.example.smartreader.data.entities.Note
+import com.example.smartreader.ui.mainActivity.utils.DeleteFloatingButton
+import com.example.smartreader.ui.mainActivity.utils.EditFloatingButton
 
 @Composable
 fun ModeratorBookDetails(bookId: String, viewModel: MainViewModel, navController: NavController) {
@@ -83,8 +86,13 @@ fun ModeratorBookDetails(bookId: String, viewModel: MainViewModel, navController
                     Text(text = bookResource.data?.title.toString(), style = MaterialTheme.typography.h4)
                     Text(text = bookResource.data?.author.toString(), style = MaterialTheme.typography.h6)
                     // Add other book details here
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
                     val painter = if (bookResource.data?.image.isNullOrEmpty()) {
-                        painterResource(id = R.drawable.no_image)
+                        painterResource(id = placeHolder)
                     } else {
                         rememberAsyncImagePainter(model = bookResource.data?.image)
                     }
@@ -98,50 +106,15 @@ fun ModeratorBookDetails(bookId: String, viewModel: MainViewModel, navController
                     )
                 }
                 // Floating button edit
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate("editBook/$bookId")
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomStart),
-                        backgroundColor = Color(0xFFADD8E6)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Book",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+                EditFloatingButton (onClick = {navController.navigate("editBook/$bookId")})
                 // Floating button delete
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            showDialogDelete=true
-                        },
-                        modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomEnd),
-                        backgroundColor = Color(0xFFFFC0CB)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Book",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+                DeleteFloatingButton(onClick ={ showDialogDelete = true })
                 //Delete Dialog
+                val deleteButtonBackgroundColor = if (isSystemInDarkTheme()) {
+                    Color(0xFF800000) // Dark theme color
+                } else {
+                    Color(0xFFFFC0CB) // Light theme color
+                }
                 if (showDialogDelete) {
                     AlertDialog(
                         onDismissRequest = {
@@ -158,7 +131,7 @@ fun ModeratorBookDetails(bookId: String, viewModel: MainViewModel, navController
                                 onClick = {
                                     viewModel.deleteBook(bookId)
                                 },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFFC0CB))
+                                colors = ButtonDefaults.buttonColors(backgroundColor = deleteButtonBackgroundColor)
                             ) {
                                 when (bookDeleteResource.status) {
                                     Resource.Status.LOADING -> {
