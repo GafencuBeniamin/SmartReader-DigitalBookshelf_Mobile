@@ -34,6 +34,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import com.example.smartreader.MainApplication
 import com.example.smartreader.data.entities.Book
 import com.example.smartreader.data.entities.BookStatus
@@ -140,6 +142,11 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
                             navController.navigate("createNote/$bookId")
                         }
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.AddBox,
+                            contentDescription = "Edit public books",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
                         Text("Add note")
                     }
                 }
@@ -375,6 +382,7 @@ fun NoteItem(note: Note, onClick: (String) -> Unit) {
     } else {
         Color(0xFFFFFFE0) // Light theme color
     }
+
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -386,10 +394,27 @@ fun NoteItem(note: Note, onClick: (String) -> Unit) {
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Page: ${note.page}", style = MaterialTheme.typography.subtitle1)
-            Text(text = note.title.toString(), style = MaterialTheme.typography.h6)
+            Text(
+                text = "Page: ${note.page}",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(top = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = note.title.toString(),
+                    style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

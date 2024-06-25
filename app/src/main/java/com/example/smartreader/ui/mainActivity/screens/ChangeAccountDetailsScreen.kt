@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -150,8 +154,15 @@ fun ChangeAccountDetails(navController: NavController, viewModel: MainViewModel)
                             )
                             viewModel.updateMyDetails(user)
                         },
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit public books",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
                         Text("Edit my details")
                         when (userEditResource.status) {
                             Resource.Status.LOADING -> {

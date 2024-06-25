@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,15 +104,12 @@ fun ChangeBookStateScreen(bookId: String, navController: NavController, viewMode
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    ExposedDropdownMenuBox(
-                        options = bookStateOptions,
-                        initialSelectedOption = stateState.value.name,
-                        onOptionSelected = { selectedState ->
-                            stateState.value = BookState.valueOf(selectedState)
-                        }
+                    // Book Title
+                    Text(
+                        text = titleState.value ?: "Unknown Title",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-
                     //Image box
                     Box(
                         contentAlignment = Alignment.Center,
@@ -140,13 +141,28 @@ fun ChangeBookStateScreen(bookId: String, navController: NavController, viewMode
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ExposedDropdownMenuBox(
+                        options = bookStateOptions,
+                        initialSelectedOption = stateState.value.name,
+                        onOptionSelected = { selectedState ->
+                            stateState.value = BookState.valueOf(selectedState)
+                        }
+                    )
+
 
                     Button(
                         onClick = {
                             viewModel.editPublicBook(bookId, stateState.value)
                         },
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit public books",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
                         Text("Edit Book State")
                         when (bookEditResource.status) {
                             Resource.Status.LOADING -> {

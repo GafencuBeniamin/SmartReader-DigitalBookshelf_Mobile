@@ -13,13 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -66,6 +71,42 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            //Image box
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .width(200.dp) // Adjust width as needed
+                    .height(267.dp) // Calculate height based on the aspect ratio (3:4)
+                    .aspectRatio(3f / 4f)
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 16.dp)
+            ) {
+                if (imageState.value.isNotEmpty()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(imageState.value),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    val placeHolder = if (!isSystemInDarkTheme()) {
+                        R.drawable.no_image
+                    } else {
+                        R.drawable.no_image_white
+                    }
+                    Image(
+                        painter = painterResource(id = placeHolder),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
+
+            ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
+                imageState.value = uri.toString()
+            })
+
             OutlinedTextField(
                 value = titleState.value,
                 onValueChange = { titleState.value = it },
@@ -115,43 +156,10 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                 }
             )
 
-            //Image box
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .width(200.dp) // Adjust width as needed
-                    .height(267.dp) // Calculate height based on the aspect ratio (3:4)
-                    .aspectRatio(3f / 4f)
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 16.dp)
-            ) {
-                if (imageState.value.isNotEmpty()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageState.value),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
-                        contentScale = ContentScale.Fit
-                    )
-                } else {
-                    val placeHolder = if (!isSystemInDarkTheme()) {
-                        R.drawable.no_image
-                    } else {
-                        R.drawable.no_image_white
-                    }
-                    Image(
-                        painter = painterResource(id = placeHolder),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
-
-            ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
-                imageState.value = uri.toString()
-            })
-
             Button(
+                modifier = Modifier.padding(top = 16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
                 onClick = {
                     val book = Book(
                         title = titleState.value,
@@ -164,8 +172,7 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                         editure = editureState.value
                     )
                     viewModel.createBook(book)
-                },
-                modifier = Modifier.padding(top = 16.dp)
+                }
             ) {
                 when (bookResource.status) {
                     Resource.Status.LOADING -> {
@@ -180,6 +187,11 @@ fun CreateBookScreen(navController: NavController, viewModel: MainViewModel) {
                         Toast.makeText(context, "Error: " + bookResource.message, Toast.LENGTH_SHORT).show()
                     }
                 }
+                Icon(
+                    imageVector = Icons.Default.CreateNewFolder,
+                    contentDescription = "Edit public books",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
                 Text("Add Book")
             }
         }

@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,6 +104,42 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    //Image box
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(200.dp) // Adjust width as needed
+                            .height(267.dp) // Calculate height based on the aspect ratio (3:4)
+                            .aspectRatio(3f / 4f)
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, bottom = 16.dp)
+                    ) {
+                        if (imageState.value.isNotEmpty()) {
+                            Image(
+                                painter = rememberAsyncImagePainter(imageState.value),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
+                                contentScale = ContentScale.Fit
+                            )
+                        } else {
+                            val placeHolder = if (!isSystemInDarkTheme()) {
+                                R.drawable.no_image
+                            } else {
+                                R.drawable.no_image_white
+                            }
+                            Image(
+                                painter = painterResource(id = placeHolder),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+
+                    ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
+                        imageState.value = uri.toString()
+                    })
+
                     OutlinedTextField(
                         value = titleState.value,
                         onValueChange = { titleState.value = it },
@@ -149,43 +189,10 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                         }
                     )
 
-                    //Image box
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .width(200.dp) // Adjust width as needed
-                            .height(267.dp) // Calculate height based on the aspect ratio (3:4)
-                            .aspectRatio(3f / 4f)
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 16.dp)
-                    ) {
-                        if (imageState.value.isNotEmpty()) {
-                            Image(
-                                painter = rememberAsyncImagePainter(imageState.value),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
-                                contentScale = ContentScale.Fit
-                            )
-                        } else {
-                            val placeHolder = if (!isSystemInDarkTheme()) {
-                                R.drawable.no_image
-                            } else {
-                                R.drawable.no_image_white
-                            }
-                            Image(
-                                painter = painterResource(id = placeHolder),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(), // Maintain aspect ratio
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-
-                    ImagePicker(viewModel = viewModel, onImagePicked = { uri ->
-                        imageState.value = uri.toString()
-                    })
-
                     Button(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         onClick = {
                             val book = Book(
                                 title = titleState.value,
@@ -201,8 +208,12 @@ fun EditBookScreen(bookId: String, navController: NavController, viewModel: Main
                             //add if book is public case
                             viewModel.editBook(bookId, book)
                         },
-                        modifier = Modifier.padding(top = 16.dp)
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit public books",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
                         Text("Edit Book")
                         when (bookEditResource.status) {
                             Resource.Status.LOADING -> {

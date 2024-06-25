@@ -17,6 +17,17 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import android.Manifest
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -45,31 +56,57 @@ fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit) {
         }
     }
 
-    if (rememberPermissionState(
-            permission = Manifest.permission.CAMERA
-        ).status.isGranted) {
-        Button(onClick = {
-            try {
-                val imageFile = createImageFile(context)
-                val uri = FileProvider.getUriForFile(
-                    context,
-                    "${context.packageName}.fileprovider",
-                    imageFile
+    Row(
+        modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ){
+        if (rememberPermissionState(
+                permission = Manifest.permission.CAMERA
+            ).status.isGranted) {
+            Button(
+                modifier = Modifier.padding(8.dp),
+                onClick = {
+                try {
+                    val imageFile = createImageFile(context)
+                    val uri = FileProvider.getUriForFile(
+                        context,
+                        "${context.packageName}.fileprovider",
+                        imageFile
+                    )
+                    viewModel.currentPhotoPath.value = imageFile.absolutePath
+                    cameraLauncher.launch(uri)
+                } catch (ex: IOException) {
+                    ex.printStackTrace()
+                }
+            },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = "Edit public books",
+                    modifier = Modifier.padding(end = 8.dp)
                 )
-                viewModel.currentPhotoPath.value = imageFile.absolutePath
-                cameraLauncher.launch(uri)
-            } catch (ex: IOException) {
-                ex.printStackTrace()
+                Text("Take Photo")
             }
-        },
-        ) {
-            Text("Take Photo")
+        } else {
+            Button(
+                modifier = Modifier.padding(8.dp),
+                onClick = {},
+                enabled = false
+            ){
+                Text("Please grant Camera permissions in app settings to use camera feature.")
+            }
+
         }
-    } else {
-        Text("Please grant Camera permissions in app settings to use camera feature.")
-    }
-    Button(onClick = { galleryLauncher.launch("image/*") }) {
-        Text("Pick from Gallery")
+        Button(modifier = Modifier.padding(8.dp), onClick = { galleryLauncher.launch("image/*") }) {
+            Icon(
+                imageVector = Icons.Default.PhotoLibrary,
+                contentDescription = "Edit public books",
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text("Pick from Gallery")
+        }
     }
 }
 
