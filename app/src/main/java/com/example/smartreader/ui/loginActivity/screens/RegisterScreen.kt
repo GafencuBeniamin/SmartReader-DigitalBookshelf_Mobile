@@ -22,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.smartreader.data.entities.LogInCredentials
@@ -80,9 +82,12 @@ fun RegisterScreen(viewModel: LoginViewModel, navController: NavController) {
                     val credentials = SignUpCredentials(email, username, password)
                     viewModel.signUpUser(credentials)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
             ) {
-                Text("Next")
+                Text(text = "Next",
+                    fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.height(16.dp))
 

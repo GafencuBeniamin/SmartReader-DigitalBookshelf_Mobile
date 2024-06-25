@@ -19,6 +19,8 @@ import com.example.smartreader.ui.loginActivity.viewmodels.LoginViewModel
 import com.example.smartreader.util.Resource
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import com.example.smartreader.di.SessionManager
 import com.example.smartreader.ui.mainActivity.MainActivity
@@ -65,9 +67,13 @@ fun LoginScreen(viewModel: LoginViewModel) {
                     val credentials = LogInCredentials(username, password)
                     viewModel.logInUser(credentials)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                
             ) {
-                Text("Next")
+                Text(text ="Next",
+                    fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.height(16.dp))
 
