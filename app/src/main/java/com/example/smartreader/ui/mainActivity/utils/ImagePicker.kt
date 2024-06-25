@@ -84,7 +84,7 @@ fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.PhotoCamera,
-                    contentDescription = "Edit public books",
+                    contentDescription = "Take photo",
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text("Take Photo")
@@ -102,7 +102,7 @@ fun ImagePicker(viewModel: MainViewModel, onImagePicked: (Uri) -> Unit) {
         Button(modifier = Modifier.padding(8.dp), onClick = { galleryLauncher.launch("image/*") }) {
             Icon(
                 imageVector = Icons.Default.PhotoLibrary,
-                contentDescription = "Edit public books",
+                contentDescription = "Pick photo from gallery",
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text("Pick from Gallery")

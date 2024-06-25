@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DeleteFloatingButton(onClick: () -> Unit, ) {
+fun DeleteFloatingButton(onClick: () -> Unit) {
     val deleteButtonBackgroundColor = if (isSystemInDarkTheme()) {
         Color(0xFF800000) // Dark theme color
     } else {

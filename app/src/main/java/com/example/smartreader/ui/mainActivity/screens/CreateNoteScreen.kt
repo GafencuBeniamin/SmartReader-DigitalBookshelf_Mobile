@@ -3,24 +3,29 @@ package com.example.smartreader.ui.mainActivity.screens
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,21 +34,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import com.example.smartreader.MainApplication
 import com.example.smartreader.MainApplication.Companion.context
-import com.example.smartreader.R
-import com.example.smartreader.data.entities.BookState
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.ui.mainActivity.utils.CameraPreviewScanner
-import com.example.smartreader.ui.mainActivity.utils.ExposedDropdownMenuBox
 import com.example.smartreader.ui.mainActivity.utils.GalleryImagePicker
+import com.example.smartreader.ui.mainActivity.utils.PhotoButton
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import com.google.mlkit.vision.common.InputImage
@@ -94,18 +92,36 @@ fun CreateNoteScreen(navController: NavController, viewModel: MainViewModel, boo
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(IntrinsicSize.Min)
+                    ) {
+                        PhotoButton(onClick = { showCamera.value = true })
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(IntrinsicSize.Min)
+                    ) {
+                        GalleryImagePicker(onImagePicked = { uri ->
+                            selectedImageUri.value = uri
+                        })
+                    }
+                }
+
                 OutlinedTextField(
                     value = commentState.value,
                     onValueChange = { commentState.value = it },
                     label = { Text("Comment") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Button(onClick = { showCamera.value = true }) {
-                    Text("Scan Text with Camera")
-                }
-                GalleryImagePicker(onImagePicked = { uri ->
-                    selectedImageUri.value = uri
-                })
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -120,7 +136,8 @@ fun CreateNoteScreen(navController: NavController, viewModel: MainViewModel, boo
                         )
                         viewModel.createNote(note)
                     },
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     when (noteResource.status) {
                         Resource.Status.LOADING -> {
@@ -135,6 +152,11 @@ fun CreateNoteScreen(navController: NavController, viewModel: MainViewModel, boo
                             Toast.makeText(context, "Error: " + noteResource.message, Toast.LENGTH_SHORT).show()
                         }
                     }
+                    Icon(
+                        imageVector = Icons.Default.CreateNewFolder,
+                        contentDescription = "Edit public books",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                     Text("Add Note")
                 }
             }

@@ -5,8 +5,11 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +31,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -47,6 +51,7 @@ import com.example.smartreader.data.entities.BookState
 import com.example.smartreader.data.entities.Note
 import com.example.smartreader.ui.mainActivity.utils.CameraPreviewScanner
 import com.example.smartreader.ui.mainActivity.utils.GalleryImagePicker
+import com.example.smartreader.ui.mainActivity.utils.PhotoButton
 import com.example.smartreader.ui.mainActivity.viewmodels.MainViewModel
 import com.example.smartreader.util.Resource
 import com.google.mlkit.vision.common.InputImage
@@ -120,19 +125,35 @@ fun EditNoteScreen(noteId: String, navController: NavController, viewModel: Main
                             label = { Text("Content") },
                             modifier = Modifier.fillMaxWidth()
                         )
-
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ){
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(IntrinsicSize.Min)
+                            ) {
+                                PhotoButton(onClick = { showCamera.value = true })
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(IntrinsicSize.Min)
+                            ) {
+                                GalleryImagePicker(onImagePicked = { uri ->
+                                    selectedImageUri.value = uri
+                                })
+                            }
+                        }
                         OutlinedTextField(
                             value = commentState.value,
                             onValueChange = { commentState.value = it },
                             label = { Text("Comment") },
                             modifier = Modifier.fillMaxWidth()
                         )
-                        Button(onClick = { showCamera.value = true }) {
-                            Text("Scan Text with Camera")
-                        }
-                        GalleryImagePicker(onImagePicked = { uri ->
-                            selectedImageUri.value = uri
-                        })
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -147,7 +168,8 @@ fun EditNoteScreen(noteId: String, navController: NavController, viewModel: Main
                                 )
                                 viewModel.editNote(noteId,note)
                             },
-                            modifier = Modifier.padding(top = 16.dp)
+                            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                         ) {
                             when (noteEditResource.status) {
                                 Resource.Status.LOADING -> {
@@ -162,6 +184,11 @@ fun EditNoteScreen(noteId: String, navController: NavController, viewModel: Main
                                     Toast.makeText(MainApplication.context, "Error: " + noteEditResource.message, Toast.LENGTH_SHORT).show()
                                 }
                             }
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit public books",
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
                             Text("Edit Note")
                         }
                     }

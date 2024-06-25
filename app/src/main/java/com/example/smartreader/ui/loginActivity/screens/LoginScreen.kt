@@ -69,8 +69,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                
+                    .height(56.dp)
             ) {
                 Text(text ="Next",
                     fontSize = 16.sp)
