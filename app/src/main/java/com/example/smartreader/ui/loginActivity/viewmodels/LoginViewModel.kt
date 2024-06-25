@@ -31,4 +31,8 @@ class LoginViewModel @Inject constructor(
             signedUpUser.postValue(result)
         }
     }
+    fun resetState(){
+        loggedInUser.value = Resource.loading(null)
+        signedUpUser.value = Resource.loading(null)
+    }
 }

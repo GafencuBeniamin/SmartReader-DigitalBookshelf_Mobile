@@ -78,17 +78,15 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
             when (loggedInUserResource.status) {
                 Resource.Status.LOADING -> {
-                    CircularProgressIndicator()
                 }
                 Resource.Status.SUCCESS -> {
-                    Text("Logged in: Welcome "+ loggedInUserResource.data?.username)
                     sessionManager.saveAuthToken(loggedInUserResource.data?.token.toString())
                     // Start MainActivity
                     val intent = Intent(LocalContext.current, MainActivity::class.java)
                     LocalContext.current.startActivity(intent)
                 }
                 Resource.Status.ERROR -> {
-                    Text("Error: " + loggedInUserResource.message)
+                    Text("Error logging in. Please verify password and username and try again")
                 }
             }
         }

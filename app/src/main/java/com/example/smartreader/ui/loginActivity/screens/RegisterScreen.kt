@@ -1,5 +1,6 @@
 package com.example.smartreader.ui.loginActivity.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.smartreader.MainApplication
 import com.example.smartreader.data.entities.LogInCredentials
 import com.example.smartreader.data.entities.SignUpCredentials
 import com.example.smartreader.ui.loginActivity.viewmodels.LoginViewModel
@@ -93,10 +95,10 @@ fun RegisterScreen(viewModel: LoginViewModel, navController: NavController) {
 
             when (signedUpUserResource.status) {
                 Resource.Status.LOADING -> {
-                    CircularProgressIndicator()
                 }
                 Resource.Status.SUCCESS -> {
-                    Text("Signed Up: Welcome "+ signedUpUserResource.data?.username)
+                    Toast.makeText(MainApplication.context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+                    viewModel.resetState()
                     navController.navigate("login")
                 }
                 Resource.Status.ERROR -> {

@@ -71,78 +71,93 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
                 }
             }
             Resource.Status.SUCCESS -> {
-                booksResource.data?.let { books ->
-                    val groupedBooks = books.groupBy { it.bookStates?.values?.firstOrNull() ?: "UNKNOWN" }
-                    val customOrder = listOf("READING", "TO_BE_READ", "DROPPED", "FINISHED", "UNKNOWN")
-                    // Define a comparator that sorts states according to the 'customOrder' list
-                    val stateComparator = Comparator<String> { state1, state2 ->
-                        val index1 = customOrder.indexOf(state1)
-                        val index2 = customOrder.indexOf(state2)
-                        when {
-                            index1 == -1 && index2 == -1 -> 0 // both are UNKNOWN, treat as equal
-                            index1 == -1 -> 1 // state1 is UNKNOWN, push it to the end
-                            index2 == -1 -> -1 // state2 is UNKNOWN, push it to the end
-                            else -> index1.compareTo(index2)
+                if (!booksResource.data.isNullOrEmpty()){
+                    booksResource.data?.let { books ->
+                        val groupedBooks = books.groupBy { it.bookStates?.values?.firstOrNull() ?: "UNKNOWN" }
+                        val customOrder = listOf("READING", "TO_BE_READ", "DROPPED", "FINISHED", "UNKNOWN")
+                        // Define a comparator that sorts states according to the 'customOrder' list
+                        val stateComparator = Comparator<String> { state1, state2 ->
+                            val index1 = customOrder.indexOf(state1)
+                            val index2 = customOrder.indexOf(state2)
+                            when {
+                                index1 == -1 && index2 == -1 -> 0 // both are UNKNOWN, treat as equal
+                                index1 == -1 -> 1 // state1 is UNKNOWN, push it to the end
+                                index2 == -1 -> -1 // state2 is UNKNOWN, push it to the end
+                                else -> index1.compareTo(index2)
+                            }
                         }
-                    }
-                    val sortedGroupedBooks = groupedBooks.mapKeys { it.key.toString() }.toSortedMap(stateComparator)
-                    LazyColumn {
-                        sortedGroupedBooks.forEach { (state, books) ->
-                            item {
-                                Card(
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxWidth()
-                                        .border(color = MaterialTheme.colors.primary,width = 2.dp, shape = RoundedCornerShape(8.dp)), // Ensure the card takes full width
-                                    shape = RoundedCornerShape(8.dp), // Rounded corners
-                                    elevation = 4.dp // Optional: Add elevation for a shadow effect
-                                ) {
-                                    Box(
+                        val sortedGroupedBooks = groupedBooks.mapKeys { it.key.toString() }.toSortedMap(stateComparator)
+                        LazyColumn {
+                            sortedGroupedBooks.forEach { (state, books) ->
+                                item {
+                                    Card(
                                         modifier = Modifier
-                                            .padding(8.dp)
-                                            .fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
+                                            .padding(16.dp)
+                                            .fillMaxWidth()
+                                            .border(color = MaterialTheme.colors.primary,width = 2.dp, shape = RoundedCornerShape(8.dp)), // Ensure the card takes full width
+                                        shape = RoundedCornerShape(8.dp), // Rounded corners
+                                        elevation = 4.dp // Optional: Add elevation for a shadow effect
                                     ) {
-                                        val stateText = when (state.toString()) {
-                                            "READING" -> "READING"
-                                            "TO_BE_READ" -> "TO BE READ"
-                                            "FINISHED" -> "FINISHED"
-                                            "DROPPED" -> "DROPPED"
-                                            else -> "Unknown"
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .fillMaxWidth(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val stateText = when (state.toString()) {
+                                                "READING" -> "READING"
+                                                "TO_BE_READ" -> "TO BE READ"
+                                                "FINISHED" -> "FINISHED"
+                                                "DROPPED" -> "DROPPED"
+                                                else -> "Unknown"
+                                            }
+                                            Text(
+                                                text = stateText,
+                                                style = MaterialTheme.typography.body1,
+                                                textAlign = TextAlign.Center
+                                            )
                                         }
-                                        Text(
-                                            text = stateText,
-                                            style = MaterialTheme.typography.body1,
-                                            textAlign = TextAlign.Center
-                                        )
+                                    }
+                                }
+                                items(books.sortedBy { it.title }) { book ->
+                                    BookItem(book = book) { bookId ->
+                                        navController.navigate("bookDetails/$bookId")
                                     }
                                 }
                             }
-                            items(books.sortedBy { it.title }) { book ->
-                                BookItem(book = book) { bookId ->
-                                    navController.navigate("bookDetails/$bookId")
-                                }
-                            }
                         }
                     }
                 }
-                // Floating button
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate("createBook")
-                        },
+                else {
+                    Box(
                         modifier = Modifier
-                            .padding(30.dp)
-                            .size(56.dp)
-                            .align(Alignment.BottomEnd)
+                            .fillMaxSize()
+                            .padding (32.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("+", fontSize = 24.sp)
+                        Text(
+                            text = "No books added in your library yet! Consider adding public books or creating your own!",
+                            style = MaterialTheme.typography.body1
+                        )
                     }
                 }
+                    // Floating button
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                navController.navigate("createBook")
+                            },
+                            modifier = Modifier
+                                .padding(30.dp)
+                                .size(56.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            Text("+", fontSize = 24.sp)
+                        }
+                    }
             }
             Resource.Status.ERROR -> {
                 Text("Error: " + booksResource.message)

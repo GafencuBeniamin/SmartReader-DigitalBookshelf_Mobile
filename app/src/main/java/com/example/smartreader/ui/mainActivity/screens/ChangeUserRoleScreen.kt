@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,6 +77,8 @@ fun ChangeUserRoleScreen(navController: NavController, viewModel: MainViewModel)
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             ExposedDropdownMenuBox(
                 options = userRoleOptions,
                 initialSelectedOption = roleState.value.name,
@@ -122,7 +125,7 @@ fun ChangeUserRoleScreen(navController: NavController, viewModel: MainViewModel)
                                 }
                                 Resource.Status.ERROR -> {
                                     showDialog = false
-                                    Toast.makeText(context, "Error: " + userEditedResource.message, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Error: User doesn't exist!", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             Text("Confirm")
