@@ -102,7 +102,7 @@ fun RegisterScreen(viewModel: LoginViewModel, navController: NavController) {
                     navController.navigate("login")
                 }
                 Resource.Status.ERROR -> {
-                    Text("Error: " + signedUpUserResource.message)
+                    Text("Error! Username or email already exists!")
                 }
             }
         }

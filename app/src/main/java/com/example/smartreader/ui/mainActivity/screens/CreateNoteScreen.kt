@@ -2,6 +2,7 @@ package com.example.smartreader.ui.mainActivity.screens
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -103,7 +104,16 @@ fun CreateNoteScreen(navController: NavController, viewModel: MainViewModel, boo
                             .weight(1f)
                             .height(IntrinsicSize.Min)
                     ) {
-                        PhotoButton(onClick = { showCamera.value = true })
+                        Button(
+                            shape = RoundedCornerShape(16.dp),
+                            onClick = { showCamera.value=true }) {
+                            Icon(
+                                imageVector = Icons.Default.PhotoCamera,
+                                contentDescription = "Take photo",
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text("Scan Text with Camera")
+                        }
                     }
                     Box(
                         modifier = Modifier

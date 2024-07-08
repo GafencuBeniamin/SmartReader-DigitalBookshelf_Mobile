@@ -1,5 +1,6 @@
 package com.example.smartreader.ui.mainActivity.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -85,7 +86,7 @@ fun BookDetailsScreen(bookId: String, viewModel: MainViewModel, navController: N
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        var isBookStatusUpdated = false
+        var isBookStatusUpdated by remember { mutableStateOf(false) }
         when (bookResource.status){
             Resource.Status.LOADING -> {
                 Box(
